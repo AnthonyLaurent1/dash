@@ -8,6 +8,7 @@ public class Level {
     private final Array<Obstacle> obstacles = new Array<>();
     private final Array<Portal> portals = new Array<>();
     private float finishX = 5000f;
+    private float initialFinishX = 5000f;
 
     public void update(float delta, float speed) {
         for (Obstacle obstacle : obstacles) {
@@ -41,5 +42,10 @@ public class Level {
 
     public void setFinishX(float finishX) {
         this.finishX = finishX;
+        this.initialFinishX = finishX;
+    }
+
+    public float getInitialFinishX() {
+        return initialFinishX;
     }
 }

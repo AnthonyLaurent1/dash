@@ -1,8 +1,10 @@
 package fr.sdv.games.ui;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import fr.sdv.games.entity.RestartButton;
 import fr.sdv.games.world.GameWorld;
@@ -11,6 +13,7 @@ public class UiOverlay {
     private final GameWorld world;
     private final SpriteBatch batch;
     private final BitmapFont font;
+    private final ShapeRenderer shapeRenderer;
     private final OrthographicCamera camera;
     private final FitViewport viewport;
 
@@ -19,6 +22,7 @@ public class UiOverlay {
         this.batch = new SpriteBatch();
         this.font = new BitmapFont();
         this.font.getData().setScale(1.2f);
+        this.shapeRenderer = new ShapeRenderer();
         this.camera = new OrthographicCamera();
         this.viewport = new FitViewport(GameWorld.SCREEN_WIDTH, GameWorld.SCREEN_HEIGHT, camera);
         this.viewport.apply();
@@ -27,10 +31,17 @@ public class UiOverlay {
     public void render() {
         viewport.apply();
         batch.setProjectionMatrix(camera.combined);
+        shapeRenderer.setProjectionMatrix(camera.combined);
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        drawProgressBar();
+        shapeRenderer.end();
 
         batch.begin();
+        font.setColor(new Color(0.18f, 0.12f, 0.14f, 1f));
         font.draw(batch, "Score: " + (int) world.getScore(), 20, GameWorld.SCREEN_HEIGHT - 20);
         font.draw(batch, "State: " + world.getPlayer().getState().getName(), 20, GameWorld.SCREEN_HEIGHT - 50);
+        font.draw(batch, (int) (getProgress() * 100f) + "%", GameWorld.SCREEN_WIDTH - 82, GameWorld.SCREEN_HEIGHT - 20);
 
         if (world.getPlayer().isDead()) {
             RestartButton button = world.getRestartButton();
@@ -47,6 +58,32 @@ public class UiOverlay {
         batch.end();
     }
 
+    private void drawProgressBar() {
+        float x = 210f;
+        float y = GameWorld.SCREEN_HEIGHT - 32f;
+        float width = 540f;
+        float height = 12f;
+        float progress = getProgress();
+
+        shapeRenderer.setColor(new Color(0.24f, 0.18f, 0.20f, 0.9f));
+        shapeRenderer.rect(x - 4f, y - 4f, width + 8f, height + 8f);
+
+        shapeRenderer.setColor(new Color(0.96f, 0.88f, 0.76f, 1f));
+        shapeRenderer.rect(x, y, width, height);
+
+        shapeRenderer.setColor(new Color(0.88f, 0.40f, 0.28f, 1f));
+        shapeRenderer.rect(x, y, width * progress, height);
+
+        shapeRenderer.setColor(new Color(1f, 0.95f, 0.85f, 0.6f));
+        shapeRenderer.rect(x, y + height - 3f, width * progress, 3f);
+    }
+
+    private float getProgress() {
+        float initialFinish = Math.max(world.getLevel().getInitialFinishX(), 1f);
+        float remaining = Math.max(world.getLevel().getFinishX(), 0f);
+        return Math.min(1f, Math.max(0f, 1f - (remaining / initialFinish)));
+    }
+
     public void resize(int width, int height) {
         viewport.update(width, height, true);
     }
@@ -54,5 +91,6 @@ public class UiOverlay {
     public void dispose() {
         batch.dispose();
         font.dispose();
+        shapeRenderer.dispose();
     }
 }

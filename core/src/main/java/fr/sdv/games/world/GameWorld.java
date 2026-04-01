@@ -14,7 +14,7 @@ public class GameWorld {
     public static final float SCREEN_WIDTH = 960f;
     public static final float SCREEN_HEIGHT = 540f;
     public static final float GROUND_Y = 90f;
-    public static final float WORLD_SPEED = 400;
+    public static final float WORLD_SPEED = 350;
 
     private final Player player;
     private Level level;
@@ -134,18 +134,20 @@ public class GameWorld {
         float blockRight = obstacle.getX() + obstacle.getWidth();
         float blockTop = obstacle.getY() + obstacle.getHeight();
         float blockBottom = obstacle.getY();
+        float overlapX = Math.min(playerRight, blockRight) - Math.max(playerLeft, blockLeft);
+        float overlapY = Math.min(playerTop, blockTop) - Math.max(playerBottom, blockBottom);
 
         if ("INVERTED".equals(player.getState().getName())) {
             boolean horizontallyAligned =
-                playerCenterX > blockLeft + 8f &&
-                    playerCenterX < blockRight - 8f;
+                playerRight > blockLeft + 6f &&
+                    playerLeft < blockRight - 6f;
 
-            boolean rising = player.getVelocityY() >= 0f;
+            boolean rising = player.getVelocityY() >= -10f;
             boolean touchingUnderSide =
                 rising &&
                     horizontallyAligned &&
-                    playerTop >= blockBottom - 8f &&
-                    playerTop <= blockBottom + 12f;
+                    playerTop >= blockBottom - 14f &&
+                    playerTop <= blockBottom + 18f;
 
             if (touchingUnderSide) {
                 player.landOn(blockBottom - player.getSize());
@@ -162,7 +164,9 @@ public class GameWorld {
                     playerCenterY > blockBottom + 2f &&
                         playerCenterY < blockTop - 2f;
 
-                if (insideBlockHeight) {
+                boolean deepOverlap = overlapX > 12f && overlapY > 12f;
+
+                if (insideBlockHeight && deepOverlap) {
                     player.startDeathAnimation();
                     player.changeState(new DeadState());
                 }
