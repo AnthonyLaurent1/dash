@@ -45,7 +45,7 @@ public class InvertedCubeState implements PlayerState {
     }
 
     /**
-     * @return identifiant textuel de l'etat
+     *  identifiant textuel de l'etat
      */
     @Override
     public String getName() {

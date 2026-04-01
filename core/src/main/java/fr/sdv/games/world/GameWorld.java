@@ -319,7 +319,7 @@ public class GameWorld {
     /**
      * Tente d'activer le bouton de redemarrage a une position donnee.
      *
-     * @return {@code true} si la partie a effectivement ete relancee
+     *  {@code true} si la partie a effectivement ete relancee
      */
     public boolean clickRestart(Vector2 worldClick) {
         if (!player.isDead() && !victory) {
@@ -334,42 +334,42 @@ public class GameWorld {
     }
 
     /**
-     * @return joueur courant
+     *  joueur courant
      */
     public Player getPlayer() {
         return player;
     }
 
     /**
-     * @return niveau actuellement charge
+     *  niveau actuellement charge
      */
     public Level getLevel() {
         return level;
     }
 
     /**
-     * @return bouton de redemarrage de l'overlay
+     *  bouton de redemarrage de l'overlay
      */
     public RestartButton getRestartButton() {
         return restartButton;
     }
 
     /**
-     * @return score courant
+     *  score courant
      */
     public float getScore() {
         return score;
     }
 
     /**
-     * @return {@code true} si le mode infini est actif
+     *  {@code true} si le mode infini est actif
      */
     public boolean isEndlessMode() {
         return endlessMode;
     }
 
     /**
-     * @return {@code true} si la fin du niveau a ete atteinte
+     *  {@code true} si la fin du niveau a ete atteinte
      */
     public boolean isVictory() {
         return victory;

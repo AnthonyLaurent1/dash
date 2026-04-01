@@ -100,49 +100,49 @@ public class Obstacle {
     }
 
     /**
-     * @return {@code true} si la destruction a ete declenchee mais n'est pas finie
+     *  {@code true} si la destruction a ete declenchee mais n'est pas finie
      */
     public boolean isBreaking() {
         return breaking;
     }
 
     /**
-     * @return {@code true} si l'obstacle a deja disparu
+     *  {@code true} si l'obstacle a deja disparu
      */
     public boolean isBroken() {
         return broken;
     }
 
     /**
-     * @return position horizontale courante
+     *  position horizontale courante
      */
     public float getX() {
         return x;
     }
 
     /**
-     * @return position verticale fixe
+     *  position verticale fixe
      */
     public float getY() {
         return y;
     }
 
     /**
-     * @return largeur de l'obstacle
+     *  largeur de l'obstacle
      */
     public float getWidth() {
         return width;
     }
 
     /**
-     * @return hauteur de l'obstacle
+     *  hauteur de l'obstacle
      */
     public float getHeight() {
         return height;
     }
 
     /**
-     * @return type logique de l'obstacle
+     *  type logique de l'obstacle
      */
     public ObstacleType getType() {
         return type;

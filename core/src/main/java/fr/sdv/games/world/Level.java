@@ -62,7 +62,7 @@ public class Level {
     }
 
     /**
-     * @return l'abscisse la plus a droite occupee par un obstacle ou un portail
+     *  l'abscisse la plus a droite occupee par un obstacle ou un portail
      */
     public float getFarthestX() {
         float farthestX = 0f;
@@ -79,21 +79,21 @@ public class Level {
     }
 
     /**
-     * @return liste des obstacles du niveau
+     *  liste des obstacles du niveau
      */
     public Array<Obstacle> getObstacles() {
         return obstacles;
     }
 
     /**
-     * @return liste des portails du niveau
+     *  liste des portails du niveau
      */
     public Array<Portal> getPortals() {
         return portals;
     }
 
     /**
-     * @return position horizontale courante de la fin
+     *  position horizontale courante de la fin
      */
     public float getFinishX() {
         return finishX;
@@ -108,7 +108,7 @@ public class Level {
     }
 
     /**
-     * @return position initiale de l'arrivee avant defilement
+     *  position initiale de l'arrivee avant defilement
      */
     public float getInitialFinishX() {
         return initialFinishX;

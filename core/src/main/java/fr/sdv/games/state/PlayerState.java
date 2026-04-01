@@ -22,7 +22,7 @@ public interface PlayerState {
     void handleInput(Player player, boolean pressed, boolean justPressed);
 
     /**
-     * @return nom court de l'etat pour debug et UI
+     *  nom court de l'etat pour debug et UI
      */
     String getName();
 }

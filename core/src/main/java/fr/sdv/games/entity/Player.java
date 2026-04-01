@@ -66,14 +66,14 @@ public class Player {
     }
 
     /**
-     * @return {@code true} si l'animation de mort est en cours
+     *  {@code true} si l'animation de mort est en cours
      */
     public boolean isDeathAnimating() {
         return deathAnimating;
     }
 
     /**
-     * @return progression normalisee de l'animation de mort entre 0 et 1
+     *  progression normalisee de l'animation de mort entre 0 et 1
      */
     public float getDeathProgress() {
         if (!deathAnimating) {
@@ -115,28 +115,28 @@ public class Player {
     }
 
     /**
-     * @return boite de collision du joueur
+     *  boite de collision du joueur
      */
     public Rectangle getBounds() {
         return new Rectangle(x, y, SIZE, SIZE);
     }
 
     /**
-     * @return {@code true} si la vitesse verticale est nulle
+     *  {@code true} si la vitesse verticale est nulle
      */
     public boolean isGrounded() {
         return velocityY == 0f;
     }
 
     /**
-     * @return {@code true} si le joueur est en mode vaisseau
+     *  {@code true} si le joueur est en mode vaisseau
      */
     public boolean isFlying() {
         return "FLY".equals(state.getName());
     }
 
     /**
-     * @return {@code true} si le joueur est dans l'etat de mort
+     *  {@code true} si le joueur est dans l'etat de mort
      */
     public boolean isDead() {
         return state instanceof DeadState;
@@ -218,7 +218,7 @@ public class Player {
     }
 
     /**
-     * @return {@code true} si le joueur est considere colle au plafond
+     *  {@code true} si le joueur est considere colle au plafond
      */
     public boolean isOnCeiling() {
         float ceilingY = GameWorld.SCREEN_HEIGHT - 36f - SIZE;
@@ -226,28 +226,28 @@ public class Player {
     }
 
     /**
-     * @return position horizontale du joueur
+     *  position horizontale du joueur
      */
     public float getX() {
         return x;
     }
 
     /**
-     * @return position verticale du joueur
+     *  position verticale du joueur
      */
     public float getY() {
         return y;
     }
 
     /**
-     * @return taille du joueur
+     *  taille du joueur
      */
     public float getSize() {
         return SIZE;
     }
 
     /**
-     * @return vitesse verticale actuelle
+     *  vitesse verticale actuelle
      */
     public float getVelocityY() {
         return velocityY;
@@ -261,7 +261,7 @@ public class Player {
     }
 
     /**
-     * @return rotation visuelle courante
+     *  rotation visuelle courante
      */
     public float getRotation() {
         return rotation;
@@ -282,14 +282,14 @@ public class Player {
     }
 
     /**
-     * @return etat brut de l'entree maintenue
+     *  etat brut de l'entree maintenue
      */
     public boolean isInputPressed() {
         return inputPressed;
     }
 
     /**
-     * @return state actif du joueur
+     *  state actif du joueur
      */
     public PlayerState getState() {
         return state;

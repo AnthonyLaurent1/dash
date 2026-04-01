@@ -42,42 +42,42 @@ public class Portal {
     }
 
     /**
-     * @return boite de collision du portail
+     * boite de collision du portail
      */
     public Rectangle getBounds() {
         return new Rectangle(x, y, width, height);
     }
 
     /**
-     * @return position horizontale courante
+     * position horizontale courante
      */
     public float getX() {
         return x;
     }
 
     /**
-     * @return position verticale
+     * position verticale
      */
     public float getY() {
         return y;
     }
 
     /**
-     * @return largeur du portail
+     * largeur du portail
      */
     public float getWidth() {
         return width;
     }
 
     /**
-     * @return hauteur du portail
+     * hauteur du portail
      */
     public float getHeight() {
         return height;
     }
 
     /**
-     * @return type de transition applique par le portail
+     * type de transition applique par le portail
      */
     public PortalType getType() {
         return type;
