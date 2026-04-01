@@ -5,7 +5,15 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import fr.sdv.games.world.GameWorld;
 
+/**
+ * Centralise la traduction des entrees clavier et souris en actions de jeu.
+ */
 public class InputHandler {
+    /**
+     * Lit les entrees du frame courant et les applique au monde.
+     *
+     * @param world monde a piloter
+     */
     public void update(GameWorld world) {
         boolean pressed = Gdx.input.isKeyPressed(Input.Keys.SPACE);
         boolean justPressed = Gdx.input.isKeyJustPressed(Input.Keys.SPACE);

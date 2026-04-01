@@ -6,6 +6,9 @@ import fr.sdv.games.state.DeadState;
 import fr.sdv.games.state.PlayerState;
 import fr.sdv.games.world.GameWorld;
 
+/**
+ * Represente le personnage controle par le joueur et son etat physique courant.
+ */
 public class Player {
     private static final float SIZE = 32f;
 
@@ -19,11 +22,16 @@ public class Player {
     private float deathTimer;
     private float deathDuration = 0.35f;
 
-
+    /**
+     * Cree un joueur remis a son etat initial.
+     */
     public Player() {
         reset();
     }
 
+    /**
+     * Repositionne le joueur au depart et restaure son etat de cube.
+     */
     public void reset() {
         x = 140f;
         y = GameWorld.GROUND_Y;
@@ -35,11 +43,17 @@ public class Player {
         changeState(new CubeState());
     }
 
+    /**
+     * Lance l'animation de mort.
+     */
     public void startDeathAnimation() {
         deathAnimating = true;
         deathTimer = deathDuration;
     }
 
+    /**
+     * Avance l'animation de mort si elle est active.
+     */
     public void updateDeathAnimation(float delta) {
         if (!deathAnimating) {
             return;
@@ -51,10 +65,16 @@ public class Player {
         }
     }
 
+    /**
+     * @return {@code true} si l'animation de mort est en cours
+     */
     public boolean isDeathAnimating() {
         return deathAnimating;
     }
 
+    /**
+     * @return progression normalisee de l'animation de mort entre 0 et 1
+     */
     public float getDeathProgress() {
         if (!deathAnimating) {
             return 0f;
@@ -62,60 +82,97 @@ public class Player {
         return 1f - (deathTimer / deathDuration);
     }
 
-
+    /**
+     * Pose instantanement le joueur sur une surface.
+     */
     public void landOn(float y) {
         this.y = y;
         this.velocityY = 0f;
         this.rotation = 0f;
     }
 
+    /**
+     * Delegue la mise a jour au state actif.
+     */
     public void update(float delta) {
         state.update(this, delta);
     }
 
+    /**
+     * Transmet les entrees du joueur au state actif.
+     */
     public void handleInput(boolean pressed, boolean justPressed) {
         inputPressed = pressed;
         state.handleInput(this, pressed, justPressed);
     }
 
+    /**
+     * Change le state de controle du joueur.
+     */
     public void changeState(PlayerState newState) {
         state = newState;
         state.enter(this);
     }
 
+    /**
+     * @return boite de collision du joueur
+     */
     public Rectangle getBounds() {
         return new Rectangle(x, y, SIZE, SIZE);
     }
 
+    /**
+     * @return {@code true} si la vitesse verticale est nulle
+     */
     public boolean isGrounded() {
         return velocityY == 0f;
     }
 
-
+    /**
+     * @return {@code true} si le joueur est en mode vaisseau
+     */
     public boolean isFlying() {
         return "FLY".equals(state.getName());
     }
 
+    /**
+     * @return {@code true} si le joueur est dans l'etat de mort
+     */
     public boolean isDead() {
         return state instanceof DeadState;
     }
 
+    /**
+     * Applique une impulsion verticale immediate.
+     */
     public void jump(float force) {
         velocityY = force;
     }
 
+    /**
+     * Applique une gravite vers le bas.
+     */
     public void applyGravity(float delta, float gravity) {
         velocityY -= gravity * delta;
     }
 
+    /**
+     * Ajoute une force verticale continue.
+     */
     public void addForce(float delta, float force) {
         velocityY += force * delta;
     }
 
+    /**
+     * Deplace verticalement le joueur selon sa vitesse courante.
+     */
     public void moveVertical(float delta) {
         y += velocityY * delta;
     }
 
+    /**
+     * Contrainte le joueur au sol pour le mode normal.
+     */
     public void clampToGround() {
         if (y <= GameWorld.GROUND_Y) {
             y = GameWorld.GROUND_Y;
@@ -124,6 +181,9 @@ public class Player {
         }
     }
 
+    /**
+     * Contrainte le vaisseau entre le sol et le plafond de la zone de vol.
+     */
     public void clampToFlyBounds() {
         if (y < GameWorld.GROUND_Y) {
             y = GameWorld.GROUND_Y;
@@ -137,11 +197,17 @@ public class Player {
         }
     }
 
+    /**
+     * Colle le joueur au plafond utilise par le mode inverse.
+     */
     public void snapToCeiling() {
         y = GameWorld.SCREEN_HEIGHT - 36f - SIZE;
         velocityY = 0f;
     }
 
+    /**
+     * Contrainte le joueur au plafond en mode inverse.
+     */
     public void clampToCeiling() {
         float ceilingY = GameWorld.SCREEN_HEIGHT - 36f - SIZE;
         if (y >= ceilingY) {
@@ -151,47 +217,80 @@ public class Player {
         }
     }
 
+    /**
+     * @return {@code true} si le joueur est considere colle au plafond
+     */
     public boolean isOnCeiling() {
         float ceilingY = GameWorld.SCREEN_HEIGHT - 36f - SIZE;
         return y >= ceilingY - 0.1f;
     }
 
+    /**
+     * @return position horizontale du joueur
+     */
     public float getX() {
         return x;
     }
 
+    /**
+     * @return position verticale du joueur
+     */
     public float getY() {
         return y;
     }
 
+    /**
+     * @return taille du joueur
+     */
     public float getSize() {
         return SIZE;
     }
 
+    /**
+     * @return vitesse verticale actuelle
+     */
     public float getVelocityY() {
         return velocityY;
     }
 
+    /**
+     * Met a jour directement la vitesse verticale.
+     */
     public void setVelocityY(float velocityY) {
         this.velocityY = velocityY;
     }
 
+    /**
+     * @return rotation visuelle courante
+     */
     public float getRotation() {
         return rotation;
     }
 
+    /**
+     * Defini la rotation visuelle du joueur.
+     */
     public void setRotation(float rotation) {
         this.rotation = rotation;
     }
 
+    /**
+     * Ajoute un delta de rotation.
+     */
     public void addRotation(float amount) {
         rotation += amount;
     }
 
+    /**
+     * @return etat brut de l'entree maintenue
+     */
     public boolean isInputPressed() {
         return inputPressed;
     }
 
+    /**
+     * @return state actif du joueur
+     */
     public PlayerState getState() {
         return state;
     }

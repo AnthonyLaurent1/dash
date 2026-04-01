@@ -4,17 +4,28 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import fr.sdv.games.Main;
 
-/** Launches the desktop (LWJGL3) application. */
+/**
+ * Lance l'application desktop via LWJGL3.
+ */
 public class Lwjgl3Launcher {
+    /**
+     * Point d'entree desktop.
+     */
     public static void main(String[] args) {
         if (StartupHelper.startNewJvmIfRequired()) return; // This handles macOS support and helps on Windows.
         createApplication();
     }
 
+    /**
+     * Cree l'instance LibGDX desktop.
+     */
     private static void  createApplication() {
         new Lwjgl3Application(new Main(), getDefaultConfiguration());
     }
 
+    /**
+     * Construit la configuration desktop par defaut.
+     */
     private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
         configuration.setTitle("Dash");

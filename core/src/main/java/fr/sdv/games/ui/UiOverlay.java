@@ -9,6 +9,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import fr.sdv.games.entity.RestartButton;
 import fr.sdv.games.world.GameWorld;
 
+/**
+ * Affiche l'interface de score, progression et redemarrage.
+ */
 public class UiOverlay {
     private final GameWorld world;
     private final SpriteBatch batch;
@@ -17,6 +20,9 @@ public class UiOverlay {
     private final OrthographicCamera camera;
     private final FitViewport viewport;
 
+    /**
+     * Cree l'overlay de l'UI lie au monde courant.
+     */
     public UiOverlay(GameWorld world) {
         this.world = world;
         this.batch = new SpriteBatch();
@@ -28,6 +34,9 @@ public class UiOverlay {
         this.viewport.apply();
     }
 
+    /**
+     * Dessine la progression, les textes de debug et les messages de fin.
+     */
     public void render() {
         viewport.apply();
         batch.setProjectionMatrix(camera.combined);
@@ -58,6 +67,9 @@ public class UiOverlay {
         batch.end();
     }
 
+    /**
+     * Dessine la barre de progression basee sur l'avancement dans le niveau.
+     */
     private void drawProgressBar() {
         float x = 210f;
         float y = GameWorld.SCREEN_HEIGHT - 32f;
@@ -78,16 +90,25 @@ public class UiOverlay {
         shapeRenderer.rect(x, y + height - 3f, width * progress, 3f);
     }
 
+    /**
+     * Calcule la progression normalisee entre le debut et la ligne d'arrivee.
+     */
     private float getProgress() {
         float initialFinish = Math.max(world.getLevel().getInitialFinishX(), 1f);
         float remaining = Math.max(world.getLevel().getFinishX(), 0f);
         return Math.min(1f, Math.max(0f, 1f - (remaining / initialFinish)));
     }
 
+    /**
+     * Met a jour le viewport de l'overlay.
+     */
     public void resize(int width, int height) {
         viewport.update(width, height, true);
     }
 
+    /**
+     * Libere les ressources graphiques de l'interface.
+     */
     public void dispose() {
         batch.dispose();
         font.dispose();

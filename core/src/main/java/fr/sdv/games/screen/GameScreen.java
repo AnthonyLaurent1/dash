@@ -9,12 +9,18 @@ import fr.sdv.games.ui.UiOverlay;
 import fr.sdv.games.world.GameWorld;
 import fr.sdv.games.world.LevelFactory;
 
+/**
+ * Ecran principal qui orchestre logique, rendu monde et interface.
+ */
 public class GameScreen implements Screen {
     private GameWorld world;
     private WorldRenderer renderer;
     private InputHandler inputHandler;
     private UiOverlay uiOverlay;
 
+    /**
+     * Initialise le monde, le renderer et l'overlay lors de l'affichage de l'ecran.
+     */
     @Override
     public void show() {
         world = new GameWorld(LevelFactory.createLevel1());
@@ -23,6 +29,11 @@ public class GameScreen implements Screen {
         uiOverlay = new UiOverlay(world);
     }
 
+    /**
+     * Met a jour les entrees, la simulation et le rendu pour un frame.
+     *
+     * @param delta temps ecoule depuis le frame precedent
+     */
     @Override
     public void render(float delta) {
         delta = Math.min(delta, 1f / 30f);
@@ -37,6 +48,9 @@ public class GameScreen implements Screen {
         uiOverlay.render();
     }
 
+    /**
+     * Propage les changements de taille au renderer et a l'overlay.
+     */
     @Override
     public void resize(int width, int height) {
         if (width <= 0 || height <= 0) return;
@@ -48,6 +62,9 @@ public class GameScreen implements Screen {
     @Override public void resume() {}
     @Override public void hide() {}
 
+    /**
+     * Libere les ressources allouees par l'ecran.
+     */
     @Override
     public void dispose() {
         renderer.dispose();

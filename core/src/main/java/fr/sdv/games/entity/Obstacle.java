@@ -2,7 +2,13 @@ package fr.sdv.games.entity;
 
 import com.badlogic.gdx.math.Rectangle;
 
+/**
+ * Represente un obstacle ou un bloc du niveau.
+ */
 public class Obstacle {
+    /**
+     * Liste des variantes d'obstacles supportees par le rendu et les collisions.
+     */
     public enum ObstacleType {
         SPIKE,
         BLOCK,
@@ -24,6 +30,9 @@ public class Obstacle {
     private boolean broken;
     private float breakTimer;
 
+    /**
+     * Cree un obstacle positionne dans le monde.
+     */
     public Obstacle(float x, float y, float width, float height, ObstacleType type) {
         this.x = x;
         this.y = y;
@@ -32,6 +41,9 @@ public class Obstacle {
         this.type = type;
     }
 
+    /**
+     * Fait defiler l'obstacle vers la gauche et gere sa destruction eventuelle.
+     */
     public void update(float delta, float speed) {
         x -= speed * delta;
 
@@ -43,6 +55,9 @@ public class Obstacle {
         }
     }
 
+    /**
+     * Lance la destruction differee d'un bloc cassable.
+     */
     public void triggerBreak(float duration) {
         if (!breaking && !broken) {
             breaking = true;
@@ -50,6 +65,9 @@ public class Obstacle {
         }
     }
 
+    /**
+     * Retourne la boite de collision pleine de l'obstacle.
+     */
     public Rectangle getBounds() {
         if (broken) {
             return new Rectangle(0, 0, 0, 0);
@@ -57,6 +75,9 @@ public class Obstacle {
         return new Rectangle(x, y, width, height);
     }
 
+    /**
+     * Retourne la zone mortelle utile pour les pics.
+     */
     public Rectangle getDangerBounds() {
         switch (type) {
             case SPIKE:
@@ -71,34 +92,58 @@ public class Obstacle {
         }
     }
 
+    /**
+     * Indique si l'obstacle participe encore aux collisions.
+     */
     public boolean isSolid() {
         return !broken;
     }
 
+    /**
+     * @return {@code true} si la destruction a ete declenchee mais n'est pas finie
+     */
     public boolean isBreaking() {
         return breaking;
     }
 
+    /**
+     * @return {@code true} si l'obstacle a deja disparu
+     */
     public boolean isBroken() {
         return broken;
     }
 
+    /**
+     * @return position horizontale courante
+     */
     public float getX() {
         return x;
     }
 
+    /**
+     * @return position verticale fixe
+     */
     public float getY() {
         return y;
     }
 
+    /**
+     * @return largeur de l'obstacle
+     */
     public float getWidth() {
         return width;
     }
 
+    /**
+     * @return hauteur de l'obstacle
+     */
     public float getHeight() {
         return height;
     }
 
+    /**
+     * @return type logique de l'obstacle
+     */
     public ObstacleType getType() {
         return type;
     }

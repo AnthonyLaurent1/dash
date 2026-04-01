@@ -10,6 +10,9 @@ import fr.sdv.games.state.DeadState;
 import fr.sdv.games.state.FlyState;
 import fr.sdv.games.state.InvertedCubeState;
 
+/**
+ * Contient l'etat complet de la partie et applique les regles de simulation.
+ */
 public class GameWorld {
     public static final float SCREEN_WIDTH = 960f;
     public static final float SCREEN_HEIGHT = 540f;
@@ -22,12 +25,18 @@ public class GameWorld {
     private float score;
     private boolean victory;
 
+    /**
+     * Cree un monde avec son joueur, son niveau et son bouton de redemarrage.
+     */
     public GameWorld(Level level) {
         this.player = new Player();
         this.level = level;
         this.restartButton = new RestartButton(340f, 130f, 280f, 60f, "Recommencer");
     }
 
+    /**
+     * Met a jour la simulation d'un frame.
+     */
     public void update(float delta) {
         if (victory) {
             return;
@@ -47,6 +56,9 @@ public class GameWorld {
         score += delta * 10f;
     }
 
+    /**
+     * Gere les changements d'etat provoques par les portails traverses.
+     */
     private void checkPortals() {
         for (Portal portal : level.getPortals()) {
             if (player.getBounds().overlaps(portal.getBounds())) {
@@ -81,7 +93,9 @@ public class GameWorld {
         }
     }
 
-
+    /**
+     * Verifie toutes les collisions entre joueur et obstacles.
+     */
     private void checkObstacles() {
         for (Obstacle obstacle : level.getObstacles()) {
             if (!obstacle.isSolid()) {
@@ -115,7 +129,9 @@ public class GameWorld {
         }
     }
 
-
+    /**
+     * Resout les collisions avec les blocs selon le mode courant du joueur.
+     */
     private void resolveBlockCollision(Obstacle obstacle) {
         if (player.isFlying()) {
             player.startDeathAnimation();
@@ -231,15 +247,18 @@ public class GameWorld {
         }
     }
 
-
-
-
+    /**
+     * Valide la victoire quand la ligne d'arrivee a ete depassee.
+     */
     private void checkVictory() {
         if (level.getFinishX() <= player.getX()) {
             victory = true;
         }
     }
 
+    /**
+     * Remet la partie a zero avec un nouveau niveau initial.
+     */
     public void reset() {
         player.reset();
         score = 0f;
@@ -247,6 +266,11 @@ public class GameWorld {
         level = LevelFactory.createLevel1();
     }
 
+    /**
+     * Tente d'activer le bouton de redemarrage a une position donnee.
+     *
+     * @return {@code true} si la partie a effectivement ete relancee
+     */
     public boolean clickRestart(Vector2 worldClick) {
         if (!player.isDead() && !victory) {
             return false;
@@ -259,22 +283,37 @@ public class GameWorld {
         return false;
     }
 
+    /**
+     * @return joueur courant
+     */
     public Player getPlayer() {
         return player;
     }
 
+    /**
+     * @return niveau actuellement charge
+     */
     public Level getLevel() {
         return level;
     }
 
+    /**
+     * @return bouton de redemarrage de l'overlay
+     */
     public RestartButton getRestartButton() {
         return restartButton;
     }
 
+    /**
+     * @return score courant
+     */
     public float getScore() {
         return score;
     }
 
+    /**
+     * @return {@code true} si la fin du niveau a ete atteinte
+     */
     public boolean isVictory() {
         return victory;
     }
