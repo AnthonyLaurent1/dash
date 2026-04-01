@@ -116,13 +116,18 @@ public class GameWorld {
                 case BLOCK:
                 case FRAGILE_BLOCK:
                 case GHOST_BLOCK:
-                case TRAP_BLOCK:
                 case FLY_BLOCK:
                     if (player.getBounds().overlaps(obstacle.getBounds())) {
                         resolveBlockCollision(obstacle);
                         if (player.isDead()) {
                             return;
                         }
+                    }
+                    break;
+
+                case TRAP_BLOCK:
+                    if (player.getBounds().overlaps(obstacle.getBounds())) {
+                        obstacle.triggerBreak(0.08f);
                     }
                     break;
             }
