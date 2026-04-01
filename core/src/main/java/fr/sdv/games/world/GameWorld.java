@@ -14,6 +14,7 @@ import fr.sdv.games.state.InvertedCubeState;
  * Contient l'etat complet de la partie et applique les regles de simulation.
  */
 public class GameWorld {
+    public static final float ENDLESS_START_SCORE = 500f;
     public static final float SCREEN_WIDTH = 960f;
     public static final float SCREEN_HEIGHT = 540f;
     public static final float GROUND_Y = 90f;
@@ -22,7 +23,9 @@ public class GameWorld {
     private final Player player;
     private Level level;
     private final RestartButton restartButton;
+    private EndlessLevelGenerator endlessGenerator;
     private float score;
+    private boolean endlessMode;
     private boolean victory;
 
     /**
@@ -50,10 +53,16 @@ public class GameWorld {
         player.update(delta);
         player.updateDeathAnimation(delta);
         level.update(delta, WORLD_SPEED);
+        if (endlessMode) {
+            endlessGenerator.update(level, score);
+        }
         checkPortals();
         checkObstacles();
-        checkVictory();
         score += delta * 10f;
+        if (!endlessMode && score >= ENDLESS_START_SCORE) {
+            startEndlessMode();
+        }
+        checkVictory();
     }
 
     /**
@@ -116,13 +125,18 @@ public class GameWorld {
                 case BLOCK:
                 case FRAGILE_BLOCK:
                 case GHOST_BLOCK:
-                case TRAP_BLOCK:
                 case FLY_BLOCK:
                     if (player.getBounds().overlaps(obstacle.getBounds())) {
                         resolveBlockCollision(obstacle);
                         if (player.isDead()) {
                             return;
                         }
+                    }
+                    break;
+
+                case TRAP_BLOCK:
+                    if (player.getBounds().overlaps(obstacle.getBounds())) {
+                        obstacle.triggerBreak(0.08f);
                     }
                     break;
             }
@@ -251,9 +265,24 @@ public class GameWorld {
      * Valide la victoire quand la ligne d'arrivee a ete depassee.
      */
     private void checkVictory() {
+        if (endlessMode) {
+            return;
+        }
+
         if (level.getFinishX() <= player.getX()) {
             victory = true;
         }
+    }
+
+    /**
+     * Bascule la partie en mode infini une fois le tutoriel termine.
+     */
+    private void startEndlessMode() {
+        endlessMode = true;
+
+        float spawnStartX = Math.max(level.getFarthestX(), SCREEN_WIDTH) + 420f;
+        endlessGenerator = new EndlessLevelGenerator(spawnStartX, player.getState().getName());
+        endlessGenerator.update(level, score);
     }
 
     /**
@@ -262,6 +291,8 @@ public class GameWorld {
     public void reset() {
         player.reset();
         score = 0f;
+        endlessMode = false;
+        endlessGenerator = null;
         victory = false;
         level = LevelFactory.createLevel1();
     }
@@ -309,6 +340,13 @@ public class GameWorld {
      */
     public float getScore() {
         return score;
+    }
+
+    /**
+     * @return {@code true} si le mode infini est actif
+     */
+    public boolean isEndlessMode() {
+        return endlessMode;
     }
 
     /**

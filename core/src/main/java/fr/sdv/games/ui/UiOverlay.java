@@ -50,7 +50,7 @@ public class UiOverlay {
         font.setColor(new Color(0.18f, 0.12f, 0.14f, 1f));
         font.draw(batch, "Score: " + (int) world.getScore(), 20, GameWorld.SCREEN_HEIGHT - 20);
         font.draw(batch, "State: " + world.getPlayer().getState().getName(), 20, GameWorld.SCREEN_HEIGHT - 50);
-        font.draw(batch, (int) (getProgress() * 100f) + "%", GameWorld.SCREEN_WIDTH - 82, GameWorld.SCREEN_HEIGHT - 20);
+        font.draw(batch, getProgressLabel(), GameWorld.SCREEN_WIDTH - 92, GameWorld.SCREEN_HEIGHT - 20);
 
         if (world.getPlayer().isDead()) {
             RestartButton button = world.getRestartButton();
@@ -94,9 +94,23 @@ public class UiOverlay {
      * Calcule la progression normalisee entre le debut et la ligne d'arrivee.
      */
     private float getProgress() {
+        if (world.isEndlessMode()) {
+            return 1f;
+        }
+
         float initialFinish = Math.max(world.getLevel().getInitialFinishX(), 1f);
         float remaining = Math.max(world.getLevel().getFinishX(), 0f);
         return Math.min(1f, Math.max(0f, 1f - (remaining / initialFinish)));
+    }
+
+    /**
+     * Retourne le libelle d'avancement adapte au mode tutoriel ou infini.
+     */
+    private String getProgressLabel() {
+        if (world.isEndlessMode()) {
+            return "INF";
+        }
+        return (int) (getProgress() * 100f) + "%";
     }
 
     /**
