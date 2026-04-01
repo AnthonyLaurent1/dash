@@ -9,6 +9,10 @@ import fr.sdv.games.entity.Portal.PortalType;
 
 /**
  * Genere des segments infinis apres la partie tutoriel.
+ *
+ * <p>Le generateur maintient toujours un stock d'obstacles devant la camera, retire les
+ * elements passes hors champ et alterne entre trois familles d'epreuves: cube, fusee
+ * et gravite inversee. La densite et les espacements evoluent avec la progression du score.</p>
  */
 public class EndlessLevelGenerator {
     private static final float TILE = 42f;
@@ -24,6 +28,9 @@ public class EndlessLevelGenerator {
     private int segmentsUntilSwitch;
     private float difficulty;
 
+    /**
+     * Modes de segment pris en charge par le generateur infini.
+     */
     private enum SegmentMode {
         CUBE,
         FLY,
@@ -44,6 +51,9 @@ public class EndlessLevelGenerator {
 
     /**
      * Maintient une reserve de segments devant la camera et nettoie les anciens elements.
+     *
+     * @param level niveau mutable a completer
+     * @param score score courant utilise pour calculer la difficulte
      */
     public void update(Level level, float score) {
         level.removeOffscreen(DESPAWN_X);
@@ -57,6 +67,9 @@ public class EndlessLevelGenerator {
         }
     }
 
+    /**
+     * Genere un segment complet dans le mode courant ou insere une transition si necessaire.
+     */
     private void appendSegment(Level level) {
         if (segmentsUntilSwitch <= 0) {
             appendTransition(level);
@@ -79,6 +92,9 @@ public class EndlessLevelGenerator {
         segmentsUntilSwitch--;
     }
 
+    /**
+     * Place un portail de transition puis change le mode logique courant du generateur.
+     */
     private void appendTransition(Level level) {
         cursorX += lerp(130f, 90f, difficulty);
 
@@ -112,6 +128,9 @@ public class EndlessLevelGenerator {
         cursorX += lerp(120f, 86f, difficulty);
     }
 
+    /**
+     * Ajoute un pattern au sol pour le mode cube.
+     */
     private void appendCubeSegment(Level level) {
         int pattern = random.nextInt(7);
         float spacingA = lerp(120f, 92f, difficulty);
@@ -186,6 +205,9 @@ public class EndlessLevelGenerator {
         }
     }
 
+    /**
+     * Choisit et ajoute un pattern de fusee.
+     */
     private void appendFlySegment(Level level) {
         float segmentStart = cursorX;
         float centerY = 282f + randomOffset(24f);
@@ -208,6 +230,9 @@ public class EndlessLevelGenerator {
         }
     }
 
+    /**
+     * Ajoute un pattern de jeu inverse depuis le plafond.
+     */
     private void appendInvertedSegment(Level level) {
         int pattern = random.nextInt(6);
         float spacingA = lerp(120f, 96f, difficulty);
@@ -263,10 +288,18 @@ public class EndlessLevelGenerator {
         }
     }
 
+    /**
+     * Interpole lineairement entre deux valeurs flottantes.
+     */
     private float lerp(float start, float end, float alpha) {
         return start + (end - start) * alpha;
     }
 
+    /**
+     * Genere un slalom fusee avec alternance haut/bas.
+     *
+     * @return nouvelle position du curseur apres le pattern
+     */
     private float appendFlySlalom(Level level, float startX, float centerY, int columns, float columnSpacing, float flyEase) {
         float currentCenter = centerY;
         float baseGap = lerp(196f, 132f, difficulty) + flyEase * 22f;
@@ -300,6 +333,11 @@ public class EndlessLevelGenerator {
         return startX + columns * columnSpacing + lerp(140f, 84f, difficulty);
     }
 
+    /**
+     * Genere un tunnel fusee avec ouvertures superposees.
+     *
+     * @return nouvelle position du curseur apres le pattern
+     */
     private float appendFlyTunnel(Level level, float startX, float centerY, float flyEase) {
         float spacing = lerp(164f, 126f, difficulty);
         float gap = lerp(182f, 120f, difficulty) + flyEase * 18f;
@@ -323,6 +361,11 @@ public class EndlessLevelGenerator {
         return startX + 7 * spacing + lerp(132f, 82f, difficulty);
     }
 
+    /**
+     * Genere un motif fusee en dents de scie.
+     *
+     * @return nouvelle position du curseur apres le pattern
+     */
     private float appendFlySaw(Level level, float startX, float centerY, float flyEase) {
         float spacing = lerp(170f, 130f, difficulty);
 
@@ -346,6 +389,11 @@ public class EndlessLevelGenerator {
         return startX + 6 * spacing + lerp(132f, 78f, difficulty);
     }
 
+    /**
+     * Genere une suite de poches fusee avec obstacles intermediaires.
+     *
+     * @return nouvelle position du curseur apres le pattern
+     */
     private float appendFlyPocket(Level level, float startX, float centerY, float flyEase) {
         float spacing = lerp(166f, 124f, difficulty);
 
@@ -372,6 +420,9 @@ public class EndlessLevelGenerator {
         return startX + 7 * spacing + lerp(136f, 84f, difficulty);
     }
 
+    /**
+     * Determine combien de segments consecutifs conserver avant le prochain portail.
+     */
     private int nextSegmentCount() {
         switch (mode) {
             case FLY:
@@ -384,6 +435,9 @@ public class EndlessLevelGenerator {
         }
     }
 
+    /**
+     * Convertit le nom d'etat du joueur en mode de generation.
+     */
     private SegmentMode fromState(String stateName) {
         if ("FLY".equals(stateName)) {
             return SegmentMode.FLY;
@@ -394,36 +448,60 @@ public class EndlessLevelGenerator {
         return SegmentMode.CUBE;
     }
 
+    /**
+     * Retourne un decalage aleatoire centre autour de zero.
+     */
     private float randomOffset(float amplitude) {
         return (random.nextFloat() * 2f - 1f) * amplitude;
     }
 
+    /**
+     * Contrainte une valeur entre deux bornes.
+     */
     private float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
     }
 
+    /**
+     * Ajoute un bloc classique aligne sur la grille du sol.
+     */
     private void addBlock(Level level, float x, int heightSteps) {
         level.addObstacle(new Obstacle(x, GameWorld.GROUND_Y + TILE * heightSteps, TILE, TILE, ObstacleType.BLOCK));
     }
 
+    /**
+     * Ajoute un bloc piege traversable aligne sur la grille du sol.
+     */
     private void addTrap(Level level, float x, int heightSteps) {
         level.addObstacle(new Obstacle(x, GameWorld.GROUND_Y + TILE * heightSteps, TILE, TILE, ObstacleType.TRAP_BLOCK));
     }
 
+    /**
+     * Ajoute un pic au sol.
+     */
     private void addGroundSpike(Level level, float x) {
         level.addObstacle(new Obstacle(x, GameWorld.GROUND_Y, SPIKE_WIDTH, SPIKE_HEIGHT, ObstacleType.SPIKE));
     }
 
+    /**
+     * Ajoute un bloc classique sur la grille du plafond inverse.
+     */
     private void addCeilingBlock(Level level, float x, int depthSteps) {
         float y = GameWorld.SCREEN_HEIGHT - 36f - (TILE * depthSteps);
         level.addObstacle(new Obstacle(x, y, TILE, TILE, ObstacleType.BLOCK));
     }
 
+    /**
+     * Ajoute un bloc piege sur la grille du plafond inverse.
+     */
     private void addCeilingTrap(Level level, float x, int depthSteps) {
         float y = GameWorld.SCREEN_HEIGHT - 36f - (TILE * depthSteps);
         level.addObstacle(new Obstacle(x, y, TILE, TILE, ObstacleType.TRAP_BLOCK));
     }
 
+    /**
+     * Ajoute un pic suspendu pour les sequences inversees.
+     */
     private void addCeilingSpike(Level level, float x) {
         level.addObstacle(new Obstacle(x, GameWorld.SCREEN_HEIGHT - 36f, SPIKE_WIDTH, SPIKE_HEIGHT, ObstacleType.FLY_SPIKE_TOP));
     }

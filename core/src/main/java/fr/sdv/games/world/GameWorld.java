@@ -14,10 +14,29 @@ import fr.sdv.games.state.InvertedCubeState;
  * Contient l'etat complet de la partie et applique les regles de simulation.
  */
 public class GameWorld {
+    /**
+     * Score a partir duquel le tutoriel laisse place au mode infini.
+     */
     public static final float ENDLESS_START_SCORE = 500f;
+
+    /**
+     * Largeur logique de la zone de jeu.
+     */
     public static final float SCREEN_WIDTH = 960f;
+
+    /**
+     * Hauteur logique de la zone de jeu.
+     */
     public static final float SCREEN_HEIGHT = 540f;
+
+    /**
+     * Ordonnée du sol sur lequel evolue le joueur en mode normal.
+     */
     public static final float GROUND_Y = 90f;
+
+    /**
+     * Vitesse de defilement horizontale appliquee au niveau.
+     */
     public static final float WORLD_SPEED = 350;
 
     private final Player player;

@@ -53,14 +53,33 @@ public class GameScreen implements Screen {
      */
     @Override
     public void resize(int width, int height) {
-        if (width <= 0 || height <= 0) return;
+        if (width <= 0 || height <= 0) {
+            return;
+        }
         renderer.resize(width, height);
         uiOverlay.resize(width, height);
     }
 
-    @Override public void pause() {}
-    @Override public void resume() {}
-    @Override public void hide() {}
+    /**
+     * Aucun traitement specifique n'est necessaire lors de la mise en pause.
+     */
+    @Override
+    public void pause() {
+    }
+
+    /**
+     * Aucun traitement specifique n'est necessaire a la reprise.
+     */
+    @Override
+    public void resume() {
+    }
+
+    /**
+     * Ne detruit pas l'ecran: les ressources sont liberees explicitement dans {@link #dispose()}.
+     */
+    @Override
+    public void hide() {
+    }
 
     /**
      * Libere les ressources allouees par l'ecran.
