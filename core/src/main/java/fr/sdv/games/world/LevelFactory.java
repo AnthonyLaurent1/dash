@@ -29,13 +29,13 @@ public final class LevelFactory {
         Level level = new Level();
 
         addIntro(level);
-        addTowerSection(level);
+        addStepSection(level);
         addFlySection(level);
         addRecoverySection(level);
         addInvertedSection(level);
         addFinalSection(level);
 
-        level.setFinishX(13880f);
+        level.setFinishX(17820f);
         return level;
     }
 
@@ -44,145 +44,142 @@ public final class LevelFactory {
      */
     private static void addIntro(Level level) {
         addGroundSpike(level, 940);
-        addGroundSpike(level, 1260);
+        addGroundSpike(level, 1320);
 
-        addBlock(level, 1570, 0);
-        addGroundSpike(level, 1652);
+        addBlock(level, 1760, 0);
+        addGroundSpike(level, 1888);
 
-        addBlock(level, 1890, 0);
-        addBlock(level, 1975, 1);
-        addGroundSpike(level, 2068);
-
-        addGroundSpike(level, 2320);
-        addGroundSpike(level, 2370);
-        addBlock(level, 2550, 0);
-        addBlock(level, 2635, 1);
-        addGroundSpike(level, 2728);
-
-        addBlock(level, 2975, 0);
-        addBlock(level, 3058, 0);
-        addGroundSpike(level, 3155);
-        addGroundSpike(level, 3205);
+        addGroundSpike(level, 2240);
+        addBlock(level, 2480, 0);
+        addBlock(level, 2660, 1);
+        addGroundSpike(level, 2740);
     }
 
     /**
-     * Ajoute une section cube plus verticale avec tours, paliers et pieges.
+     * Ajoute une section cube en marches, calibree pour la hauteur de saut reelle.
      */
-    private static void addTowerSection(Level level) {
-        addBlock(level, 3490, 0);
-        addBlock(level, 3572, 1);
-        addBlock(level, 3654, 2);
-        addGroundSpike(level, 3748);
+    private static void addStepSection(Level level) {
+        addBlock(level, 3140, 0);
+        addBlock(level, 3325, 1);
+        addGroundSpike(level, 3400);
 
-        addBlock(level, 3970, 0);
-        addBlock(level, 4052, 1);
-        addTrap(level, 4134, 2);
-        addGroundSpike(level, 4228);
+        addBlock(level, 3690, 0);
+        addGroundSpike(level, 3820);
 
-        addBlock(level, 4480, 0);
-        addGroundSpike(level, 4565);
-        addGroundSpike(level, 4615);
-        addBlock(level, 4770, 0);
-        addBlock(level, 4852, 1);
-        addGroundSpike(level, 4945);
+        addGroundSpike(level, 4100);
+        addGroundSpike(level, 4152);
+        addBlock(level, 4380, 0);
+        addBlock(level, 4560, 1);
+        addGroundSpike(level, 4640);
 
-        addBlock(level, 5230, 0);
-        addBlock(level, 5312, 0);
-        addBlock(level, 5394, 1);
-        addGroundSpike(level, 5488);
+        addBlock(level, 4820, 0);
+        addTrap(level, 5000, 1);
+        addGroundSpike(level, 5128);
 
-        level.addPortal(new Portal(5770, 0, 52, GameWorld.SCREEN_HEIGHT, PortalType.FLY));
+        level.addPortal(new Portal(4910, 0, 52, GameWorld.SCREEN_HEIGHT, PortalType.FLY));
     }
 
     /**
      * Construit le couloir vaisseau avec alternance de plafonds, sols et blocs flottants.
      */
     private static void addFlySection(Level level) {
-        level.addObstacle(new Obstacle(6075, 150, 64, 108, ObstacleType.FLY_BLOCK));
-        level.addObstacle(new Obstacle(6075, 384, 64, 58, ObstacleType.FLY_BLOCK));
+        level.addObstacle(new Obstacle(5280, 180, 54, 66, ObstacleType.FLY_BLOCK));
+        level.addObstacle(new Obstacle(5280, 364, 54, 36, ObstacleType.FLY_BLOCK));
 
-        level.addObstacle(new Obstacle(6285, GameWorld.GROUND_Y, 34, 48, ObstacleType.FLY_SPIKE_BOTTOM));
-        level.addObstacle(new Obstacle(6285, GameWorld.SCREEN_HEIGHT - 36, 34, 48, ObstacleType.FLY_SPIKE_TOP));
+        level.addObstacle(new Obstacle(5560, GameWorld.GROUND_Y, 30, 34, ObstacleType.FLY_SPIKE_BOTTOM));
+        level.addObstacle(new Obstacle(5560, GameWorld.SCREEN_HEIGHT - 36, 30, 34, ObstacleType.FLY_SPIKE_TOP));
 
-        level.addObstacle(new Obstacle(6450, 128, 62, 92, ObstacleType.FLY_BLOCK));
-        level.addObstacle(new Obstacle(6620, 334, 62, 92, ObstacleType.FLY_BLOCK));
+        level.addObstacle(new Obstacle(5800, 170, 54, 66, ObstacleType.FLY_BLOCK));
+        level.addObstacle(new Obstacle(6060, 346, 54, 46, ObstacleType.FLY_BLOCK));
 
-        level.addObstacle(new Obstacle(6810, 220, 80, 76, ObstacleType.FLY_BLOCK));
-        level.addObstacle(new Obstacle(6995, GameWorld.GROUND_Y, 34, 52, ObstacleType.FLY_SPIKE_BOTTOM));
-        level.addObstacle(new Obstacle(7050, GameWorld.SCREEN_HEIGHT - 36, 34, 52, ObstacleType.FLY_SPIKE_TOP));
+        level.addObstacle(new Obstacle(6310, 125, 56, 92, ObstacleType.FLY_BLOCK));
+        level.addObstacle(new Obstacle(6510, 384, 56, 52, ObstacleType.FLY_BLOCK));
+        level.addObstacle(new Obstacle(6710, 242, 72, 58, ObstacleType.FLY_BLOCK));
 
-        level.addObstacle(new Obstacle(7235, 156, 66, 118, ObstacleType.FLY_BLOCK));
-        level.addObstacle(new Obstacle(7410, 398, 66, 44, ObstacleType.FLY_BLOCK));
-        level.addObstacle(new Obstacle(7585, 290, 66, 86, ObstacleType.FLY_BLOCK));
-        level.addObstacle(new Obstacle(7760, 112, 66, 92, ObstacleType.FLY_BLOCK));
+        level.addObstacle(new Obstacle(6935, GameWorld.GROUND_Y, 32, 46, ObstacleType.FLY_SPIKE_BOTTOM));
+        level.addObstacle(new Obstacle(6935, GameWorld.SCREEN_HEIGHT - 36, 32, 46, ObstacleType.FLY_SPIKE_TOP));
 
-        level.addObstacle(new Obstacle(7945, GameWorld.SCREEN_HEIGHT - 36, 34, 54, ObstacleType.FLY_SPIKE_TOP));
-        level.addObstacle(new Obstacle(8020, GameWorld.GROUND_Y, 34, 54, ObstacleType.FLY_SPIKE_BOTTOM));
-        level.addObstacle(new Obstacle(8165, 228, 88, 94, ObstacleType.FLY_BLOCK));
+        level.addObstacle(new Obstacle(7160, 150, 58, 84, ObstacleType.FLY_BLOCK));
+        level.addObstacle(new Obstacle(7345, 332, 58, 76, ObstacleType.FLY_BLOCK));
+        level.addObstacle(new Obstacle(7540, 188, 60, 74, ObstacleType.FLY_BLOCK));
+        level.addObstacle(new Obstacle(7725, 350, 60, 60, ObstacleType.FLY_BLOCK));
 
-        level.addPortal(new Portal(8420, 0, 52, GameWorld.SCREEN_HEIGHT, PortalType.CUBE));
+        level.addObstacle(new Obstacle(7935, GameWorld.GROUND_Y, 34, 52, ObstacleType.FLY_SPIKE_BOTTOM));
+        level.addObstacle(new Obstacle(8010, GameWorld.SCREEN_HEIGHT - 36, 34, 52, ObstacleType.FLY_SPIKE_TOP));
+
+        level.addObstacle(new Obstacle(8180, 122, 64, 108, ObstacleType.FLY_BLOCK));
+        level.addObstacle(new Obstacle(8370, 382, 64, 44, ObstacleType.FLY_BLOCK));
+        level.addObstacle(new Obstacle(8565, 260, 70, 62, ObstacleType.FLY_BLOCK));
+        level.addObstacle(new Obstacle(8765, 156, 60, 86, ObstacleType.FLY_BLOCK));
+        level.addObstacle(new Obstacle(8960, 340, 60, 68, ObstacleType.FLY_BLOCK));
+
+        level.addPortal(new Portal(9260, 0, 52, GameWorld.SCREEN_HEIGHT, PortalType.CUBE));
     }
 
     /**
      * Replace le joueur au sol avec une difficulte intermediaire avant inversion.
      */
     private static void addRecoverySection(Level level) {
-        addBlock(level, 8755, 0);
-        addGroundSpike(level, 8838);
-        addBlock(level, 9050, 0);
-        addBlock(level, 9132, 1);
-        addGroundSpike(level, 9226);
+        addBlock(level, 9620, 0);
+        addGroundSpike(level, 9750);
+        addBlock(level, 10010, 0);
+        addBlock(level, 10190, 1);
+        addGroundSpike(level, 10342);
 
-        addGroundSpike(level, 9445);
-        addGroundSpike(level, 9495);
-        addBlock(level, 9670, 0);
-        addBlock(level, 9752, 0);
-        addBlock(level, 9834, 1);
+        addGroundSpike(level, 10640);
+        addGroundSpike(level, 10692);
+        addBlock(level, 10920, 0);
+        addTrap(level, 11100, 1);
+        addGroundSpike(level, 11232);
 
-        addGroundSpike(level, 10062);
-        addBlock(level, 10240, 0);
-        addTrap(level, 10322, 1);
-        addGroundSpike(level, 10414);
+        addBlock(level, 11500, 0);
+        addBlock(level, 11680, 1);
+        addTrap(level, 11860, 0);
+        addGroundSpike(level, 11992);
 
-        level.addPortal(new Portal(10660, 0, 52, GameWorld.SCREEN_HEIGHT, PortalType.INVERT_ON));
+        level.addPortal(new Portal(12300, 0, 52, GameWorld.SCREEN_HEIGHT, PortalType.INVERT_ON));
     }
 
     /**
      * Ajoute la portion au plafond une fois la gravite inversee.
      */
     private static void addInvertedSection(Level level) {
-        addCeilingBlock(level, 10945, 1);
-        addCeilingSpike(level, 11038);
-        addCeilingBlock(level, 11240, 1);
-        addCeilingBlock(level, 11322, 2);
+        addCeilingBlock(level, 12640, 1);
+        addCeilingSpike(level, 12770);
+        addCeilingBlock(level, 13020, 1);
+        addCeilingBlock(level, 13200, 2);
 
-        addCeilingSpike(level, 11548);
-        addCeilingBlock(level, 11720, 1);
-        addCeilingTrap(level, 11802, 2);
-        addCeilingBlock(level, 11884, 3);
+        addCeilingSpike(level, 13460);
+        addCeilingBlock(level, 13680, 1);
+        addCeilingTrap(level, 13860, 2);
+        addCeilingBlock(level, 14040, 2);
 
-        addCeilingSpike(level, 12124);
-        addCeilingSpike(level, 12174);
-        addCeilingBlock(level, 12330, 1);
-        addCeilingBlock(level, 12412, 2);
-        addCeilingBlock(level, 12494, 3);
+        addCeilingSpike(level, 14300);
+        addCeilingBlock(level, 14520, 1);
+        addCeilingTrap(level, 14700, 1);
 
-        level.addPortal(new Portal(12740, 0, 52, GameWorld.SCREEN_HEIGHT, PortalType.INVERT_OFF));
+        level.addPortal(new Portal(15020, 0, 52, GameWorld.SCREEN_HEIGHT, PortalType.INVERT_OFF));
     }
 
     /**
      * Termine le niveau avec une derniere acceleration de difficultes en escalier.
      */
     private static void addFinalSection(Level level) {
-        addBlock(level, 13070, 0);
-        addBlock(level, 13152, 1);
-        addGroundSpike(level, 13245);
+        addBlock(level, 15320, 0);
+        addGroundSpike(level, 15448);
 
-        addGroundSpike(level, 13425);
-        addGroundSpike(level, 13475);
-        addBlock(level, 13620, 0);
-        addBlock(level, 13702, 1);
-        addBlock(level, 13784, 2);
+        addGroundSpike(level, 15720);
+        addGroundSpike(level, 15772);
+        addBlock(level, 15990, 0);
+        addBlock(level, 16170, 1);
+        addGroundSpike(level, 16324);
+
+        addBlock(level, 16600, 0);
+        addTrap(level, 16780, 1);
+        addGroundSpike(level, 16908);
+
+        addGroundSpike(level, 17220);
+        addBlock(level, 17440, 0);
     }
 
     /**
