@@ -20,7 +20,7 @@ public class Player {
     private PlayerState state;
     private boolean deathAnimating;
     private float deathTimer;
-    private float deathDuration = 0.35f;
+    private final float deathDuration = 0.35f;
 
     /**
      * Cree un joueur remis a son etat initial.

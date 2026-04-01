@@ -9,6 +9,7 @@ import fr.sdv.games.state.CubeState;
 import fr.sdv.games.state.DeadState;
 import fr.sdv.games.state.FlyState;
 import fr.sdv.games.state.InvertedCubeState;
+import fr.sdv.games.world.endless.EndlessLevelGenerator;
 
 /**
  * Contient l'etat complet de la partie et applique les regles de simulation.
