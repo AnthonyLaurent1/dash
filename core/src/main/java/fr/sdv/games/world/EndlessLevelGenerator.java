@@ -190,19 +190,20 @@ public class EndlessLevelGenerator {
         float segmentStart = cursorX;
         float centerY = 282f + randomOffset(24f);
         int pattern = random.nextInt(4);
+        float flyEase = 1f - Math.min(1f, difficulty * 1.45f);
 
         switch (pattern) {
             case 0:
-                cursorX = appendFlySlalom(level, segmentStart, centerY, 7 + random.nextInt(3), lerp(152f, 124f, difficulty));
+                cursorX = appendFlySlalom(level, segmentStart, centerY, 6 + random.nextInt(2), lerp(176f, 132f, difficulty), flyEase);
                 break;
             case 1:
-                cursorX = appendFlyTunnel(level, segmentStart, centerY);
+                cursorX = appendFlyTunnel(level, segmentStart, centerY, flyEase);
                 break;
             case 2:
-                cursorX = appendFlySaw(level, segmentStart, centerY);
+                cursorX = appendFlySaw(level, segmentStart, centerY, flyEase);
                 break;
             default:
-                cursorX = appendFlyPocket(level, segmentStart, centerY);
+                cursorX = appendFlyPocket(level, segmentStart, centerY, flyEase);
                 break;
         }
     }
@@ -266,9 +267,9 @@ public class EndlessLevelGenerator {
         return start + (end - start) * alpha;
     }
 
-    private float appendFlySlalom(Level level, float startX, float centerY, int columns, float columnSpacing) {
+    private float appendFlySlalom(Level level, float startX, float centerY, int columns, float columnSpacing, float flyEase) {
         float currentCenter = centerY;
-        float baseGap = lerp(164f, 122f, difficulty);
+        float baseGap = lerp(196f, 132f, difficulty) + flyEase * 22f;
 
         for (int i = 0; i < columns; i++) {
             float x = startX + 84f + i * columnSpacing;
@@ -283,29 +284,29 @@ public class EndlessLevelGenerator {
                 level.addObstacle(new Obstacle(x, topClearY, 56, topHeight, ObstacleType.FLY_BLOCK));
             }
 
-            if (difficulty > 0.35f) {
+            if (difficulty > 0.45f && flyEase < 0.55f) {
                 float midY = clamp(currentCenter - 26f + randomOffset(14f), 176f, 338f);
                 level.addObstacle(new Obstacle(x + 66f, midY, 34, 38, ObstacleType.FLY_BLOCK));
             }
 
-            if (i == 2 || i == columns - 2) {
+            if ((i == 2 || i == columns - 2) && flyEase < 0.85f) {
                 level.addObstacle(new Obstacle(x + 90f, GameWorld.GROUND_Y, 30, 42, ObstacleType.FLY_SPIKE_BOTTOM));
                 level.addObstacle(new Obstacle(x + 90f, GameWorld.SCREEN_HEIGHT - 36f, 30, 42, ObstacleType.FLY_SPIKE_TOP));
             }
 
-            currentCenter = clamp(currentCenter + randomOffset(lerp(40f, 68f, difficulty)), 212f, 352f);
+            currentCenter = clamp(currentCenter + randomOffset(lerp(28f, 68f, difficulty)), 212f, 352f);
         }
 
-        return startX + columns * columnSpacing + lerp(118f, 84f, difficulty);
+        return startX + columns * columnSpacing + lerp(140f, 84f, difficulty);
     }
 
-    private float appendFlyTunnel(Level level, float startX, float centerY) {
-        float spacing = lerp(148f, 122f, difficulty);
-        float gap = lerp(154f, 114f, difficulty);
+    private float appendFlyTunnel(Level level, float startX, float centerY, float flyEase) {
+        float spacing = lerp(164f, 126f, difficulty);
+        float gap = lerp(182f, 120f, difficulty) + flyEase * 18f;
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 7; i++) {
             float x = startX + 80f + i * spacing;
-            float localCenter = clamp(centerY + (i % 2 == 0 ? -30f : 30f), 220f, 336f);
+            float localCenter = clamp(centerY + (i % 2 == 0 ? -24f : 24f), 220f, 336f);
             float bottomHeight = clamp(localCenter - gap * 0.5f - GameWorld.GROUND_Y, 46f, 186f);
             float topClearY = localCenter + gap * 0.5f;
             float topHeight = clamp((GameWorld.SCREEN_HEIGHT - 36f) - topClearY, 38f, 176f);
@@ -313,42 +314,44 @@ public class EndlessLevelGenerator {
             level.addObstacle(new Obstacle(x, GameWorld.GROUND_Y, 48, bottomHeight, ObstacleType.FLY_BLOCK));
             level.addObstacle(new Obstacle(x, topClearY, 48, topHeight, ObstacleType.FLY_BLOCK));
 
-            if (i % 2 == 1) {
+            if (i % 2 == 1 && flyEase < 0.65f) {
                 float midY = clamp(localCenter - 24f + randomOffset(12f), 182f, 330f);
                 level.addObstacle(new Obstacle(x + 72f, midY, 32, 34, ObstacleType.FLY_BLOCK));
             }
         }
 
-        return startX + 8 * spacing + lerp(116f, 80f, difficulty);
+        return startX + 7 * spacing + lerp(132f, 82f, difficulty);
     }
 
-    private float appendFlySaw(Level level, float startX, float centerY) {
-        float spacing = lerp(156f, 126f, difficulty);
+    private float appendFlySaw(Level level, float startX, float centerY, float flyEase) {
+        float spacing = lerp(170f, 130f, difficulty);
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 6; i++) {
             float x = startX + 84f + i * spacing;
-            float swing = (i % 3 - 1) * lerp(46f, 70f, difficulty);
+            float swing = (i % 3 - 1) * lerp(32f, 70f, difficulty);
             float localCenter = clamp(centerY + swing, 212f, 352f);
-            float gap = lerp(160f, 118f, difficulty);
+            float gap = lerp(188f, 122f, difficulty) + flyEase * 14f;
             float bottomHeight = clamp(localCenter - gap * 0.5f - GameWorld.GROUND_Y, 44f, 190f);
             float topClearY = localCenter + gap * 0.5f;
             float topHeight = clamp((GameWorld.SCREEN_HEIGHT - 36f) - topClearY, 36f, 180f);
 
             level.addObstacle(new Obstacle(x, GameWorld.GROUND_Y, 54, bottomHeight, ObstacleType.FLY_BLOCK));
-            level.addObstacle(new Obstacle(x + 70f, topClearY, 54, topHeight, ObstacleType.FLY_BLOCK));
-            level.addObstacle(new Obstacle(x + 128f, GameWorld.GROUND_Y, 28, 40, ObstacleType.FLY_SPIKE_BOTTOM));
-            level.addObstacle(new Obstacle(x + 128f, GameWorld.SCREEN_HEIGHT - 36f, 28, 40, ObstacleType.FLY_SPIKE_TOP));
+            level.addObstacle(new Obstacle(x + 76f, topClearY, 54, topHeight, ObstacleType.FLY_BLOCK));
+            if (flyEase < 0.8f) {
+                level.addObstacle(new Obstacle(x + 138f, GameWorld.GROUND_Y, 28, 40, ObstacleType.FLY_SPIKE_BOTTOM));
+                level.addObstacle(new Obstacle(x + 138f, GameWorld.SCREEN_HEIGHT - 36f, 28, 40, ObstacleType.FLY_SPIKE_TOP));
+            }
         }
 
-        return startX + 7 * spacing + lerp(108f, 76f, difficulty);
+        return startX + 6 * spacing + lerp(132f, 78f, difficulty);
     }
 
-    private float appendFlyPocket(Level level, float startX, float centerY) {
-        float spacing = lerp(150f, 120f, difficulty);
+    private float appendFlyPocket(Level level, float startX, float centerY, float flyEase) {
+        float spacing = lerp(166f, 124f, difficulty);
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 7; i++) {
             float x = startX + 82f + i * spacing;
-            float gap = lerp(166f, 124f, difficulty);
+            float gap = lerp(192f, 128f, difficulty) + flyEase * 16f;
             float bottomHeight = clamp(centerY - gap * 0.5f - GameWorld.GROUND_Y, 44f, 178f);
             float topClearY = centerY + gap * 0.5f;
             float topHeight = clamp((GameWorld.SCREEN_HEIGHT - 36f) - topClearY, 36f, 172f);
@@ -359,14 +362,14 @@ public class EndlessLevelGenerator {
                 level.addObstacle(new Obstacle(x, topClearY, 58, topHeight, ObstacleType.FLY_BLOCK));
             }
 
-            if (i % 4 == 1) {
+            if (i % 4 == 1 && flyEase < 0.7f) {
                 level.addObstacle(new Obstacle(x + 72f, GameWorld.GROUND_Y + 84f, 36, 92, ObstacleType.FLY_BLOCK));
-            } else if (i % 4 == 2) {
+            } else if (i % 4 == 2 && flyEase < 0.7f) {
                 level.addObstacle(new Obstacle(x + 72f, 260f, 36, 92, ObstacleType.FLY_BLOCK));
             }
         }
 
-        return startX + 8 * spacing + lerp(114f, 82f, difficulty);
+        return startX + 7 * spacing + lerp(136f, 84f, difficulty);
     }
 
     private int nextSegmentCount() {
