@@ -3,6 +3,8 @@ package fr.sdv.games.entity;
 import com.badlogic.gdx.math.Rectangle;
 import fr.sdv.games.state.CubeState;
 import fr.sdv.games.state.DeadState;
+import fr.sdv.games.state.FlyState;
+import fr.sdv.games.state.InvertedCubeState;
 import fr.sdv.games.state.PlayerState;
 import fr.sdv.games.world.GameWorld;
 
@@ -34,13 +36,12 @@ public class Player {
      */
     public void reset() {
         x = 140f;
-        y = GameWorld.GROUND_Y;
         velocityY = 0f;
         rotation = 0f;
         inputPressed = false;
         deathAnimating = false;
         deathTimer = 0f;
-        changeState(new CubeState());
+        setGroundedCubeState();
     }
 
     /**
@@ -49,6 +50,17 @@ public class Player {
     public void startDeathAnimation() {
         deathAnimating = true;
         deathTimer = deathDuration;
+    }
+
+    /**
+     * Active l'etat de mort et son animation.
+     */
+    public void die() {
+        if (isDead()) {
+            return;
+        }
+        startDeathAnimation();
+        changeState(new DeadState());
     }
 
     /**
@@ -92,6 +104,14 @@ public class Player {
     }
 
     /**
+     * Remet le joueur en mode cube pose au sol.
+     */
+    public void setGroundedCubeState() {
+        landOn(GameWorld.GROUND_Y);
+        changeState(new CubeState());
+    }
+
+    /**
      * Delegue la mise a jour au state actif.
      */
     public void update(float delta) {
@@ -132,7 +152,14 @@ public class Player {
      *  {@code true} si le joueur est en mode vaisseau
      */
     public boolean isFlying() {
-        return "FLY".equals(state.getName());
+        return state instanceof FlyState;
+    }
+
+    /**
+     *  {@code true} si le joueur est en mode cube inverse
+     */
+    public boolean isInverted() {
+        return state instanceof InvertedCubeState;
     }
 
     /**
@@ -190,7 +217,7 @@ public class Player {
             velocityY = 0f;
         }
 
-        float maxY = GameWorld.SCREEN_HEIGHT - 36f - SIZE;
+        float maxY = getCeilingY();
         if (y > maxY) {
             y = maxY;
             velocityY = -60f;
@@ -201,7 +228,7 @@ public class Player {
      * Colle le joueur au plafond utilise par le mode inverse.
      */
     public void snapToCeiling() {
-        y = GameWorld.SCREEN_HEIGHT - 36f - SIZE;
+        y = getCeilingY();
         velocityY = 0f;
     }
 
@@ -209,7 +236,7 @@ public class Player {
      * Contrainte le joueur au plafond en mode inverse.
      */
     public void clampToCeiling() {
-        float ceilingY = GameWorld.SCREEN_HEIGHT - 36f - SIZE;
+        float ceilingY = getCeilingY();
         if (y >= ceilingY) {
             y = ceilingY;
             velocityY = 0f;
@@ -221,8 +248,11 @@ public class Player {
      *  {@code true} si le joueur est considere colle au plafond
      */
     public boolean isOnCeiling() {
-        float ceilingY = GameWorld.SCREEN_HEIGHT - 36f - SIZE;
-        return y >= ceilingY - 0.1f;
+        return y >= getCeilingY() - 0.1f;
+    }
+
+    private float getCeilingY() {
+        return GameWorld.SCREEN_HEIGHT - 36f - SIZE;
     }
 
     /**

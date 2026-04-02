@@ -3,6 +3,7 @@ package fr.sdv.games.entity;
 import fr.sdv.games.state.CubeState;
 import fr.sdv.games.state.DeadState;
 import fr.sdv.games.state.FlyState;
+import fr.sdv.games.state.InvertedCubeState;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,6 +38,16 @@ class PlayerTest {
 
         assertTrue(player.isDeathAnimating());
         assertEquals(0f, player.getDeathProgress(), 0.0001f);
+    }
+
+    @Test
+    void dieShouldCentralizeDeadStateTransition() {
+        Player player = new Player();
+
+        player.die();
+
+        assertTrue(player.isDead());
+        assertTrue(player.isDeathAnimating());
     }
 
     @Test
@@ -134,6 +145,15 @@ class PlayerTest {
 
         assertEquals("FLY", player.getState().getName());
         assertTrue(player.isFlying());
+    }
+
+    @Test
+    void isInvertedShouldReturnTrueWhenInvertedStateIsApplied() {
+        Player player = new Player();
+
+        player.changeState(new InvertedCubeState());
+
+        assertTrue(player.isInverted());
     }
 
     @Test

@@ -32,6 +32,7 @@ public class Obstacle {
 
     /**
      * Cree un obstacle positionne dans le monde.
+     * @param x
      */
     public Obstacle(float x, float y, float width, float height, ObstacleType type) {
         this.x = x;

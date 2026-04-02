@@ -5,8 +5,6 @@ import fr.sdv.games.entity.Obstacle;
 import fr.sdv.games.entity.Player;
 import fr.sdv.games.entity.Portal;
 import fr.sdv.games.entity.RestartButton;
-import fr.sdv.games.state.CubeState;
-import fr.sdv.games.state.DeadState;
 import fr.sdv.games.state.FlyState;
 import fr.sdv.games.state.InvertedCubeState;
 import fr.sdv.games.world.endless.EndlessLevelGenerator;
@@ -100,21 +98,19 @@ public class GameWorld {
 
                     case CUBE:
                         if (player.isFlying()) {
-                            player.changeState(new CubeState());
-                            player.landOn(GROUND_Y);
+                            player.setGroundedCubeState();
                         }
                         break;
 
                     case INVERT_ON:
-                        if (!"INVERTED".equals(player.getState().getName())) {
+                        if (!player.isInverted()) {
                             player.changeState(new InvertedCubeState());
                         }
                         break;
 
                     case INVERT_OFF:
-                        if ("INVERTED".equals(player.getState().getName())) {
-                            player.changeState(new CubeState());
-                            player.landOn(GROUND_Y);
+                        if (player.isInverted()) {
+                            player.setGroundedCubeState();
                         }
                         break;
                 }
@@ -136,8 +132,7 @@ public class GameWorld {
                 case FLY_SPIKE_TOP:
                 case FLY_SPIKE_BOTTOM:
                     if (player.getBounds().overlaps(obstacle.getDangerBounds())) {
-                        player.startDeathAnimation();
-                        player.changeState(new DeadState());
+                        player.die();
                         return;
                     }
                     break;
@@ -147,7 +142,7 @@ public class GameWorld {
                 case GHOST_BLOCK:
                 case FLY_BLOCK:
                     if (player.getBounds().overlaps(obstacle.getBounds())) {
-                        resolveBlockCollision(obstacle);
+                        BlockCollisionResolver.resolve(player, obstacle);
                         if (player.isDead()) {
                             return;
                         }
@@ -160,124 +155,6 @@ public class GameWorld {
                     }
                     break;
             }
-        }
-    }
-
-    /**
-     * Resout les collisions avec les blocs selon le mode courant du joueur.
-     */
-    private void resolveBlockCollision(Obstacle obstacle) {
-        if (player.isFlying()) {
-            player.startDeathAnimation();
-            player.changeState(new DeadState());
-            return;
-        }
-
-        float playerLeft = player.getX();
-        float playerRight = player.getX() + player.getSize();
-        float playerBottom = player.getY();
-        float playerTop = player.getY() + player.getSize();
-        float playerCenterY = player.getY() + player.getSize() * 0.5f;
-        float playerCenterX = player.getX() + player.getSize() * 0.5f;
-
-        float blockLeft = obstacle.getX();
-        float blockRight = obstacle.getX() + obstacle.getWidth();
-        float blockTop = obstacle.getY() + obstacle.getHeight();
-        float blockBottom = obstacle.getY();
-        float overlapX = Math.min(playerRight, blockRight) - Math.max(playerLeft, blockLeft);
-        float overlapY = Math.min(playerTop, blockTop) - Math.max(playerBottom, blockBottom);
-
-        if ("INVERTED".equals(player.getState().getName())) {
-            boolean horizontallyAligned =
-                playerRight > blockLeft + 6f &&
-                    playerLeft < blockRight - 6f;
-
-            boolean rising = player.getVelocityY() >= -10f;
-            boolean touchingUnderSide =
-                rising &&
-                    horizontallyAligned &&
-                    playerTop >= blockBottom - 14f &&
-                    playerTop <= blockBottom + 18f;
-
-            if (touchingUnderSide) {
-                player.landOn(blockBottom - player.getSize());
-
-                if (obstacle.getType() == Obstacle.ObstacleType.TRAP_BLOCK) {
-                    obstacle.triggerBreak(0.08f);
-                }
-                return;
-            }
-
-            if (obstacle.getType() != Obstacle.ObstacleType.GHOST_BLOCK
-                && obstacle.getType() != Obstacle.ObstacleType.TRAP_BLOCK) {
-                boolean insideBlockHeight =
-                    playerCenterY > blockBottom + 2f &&
-                        playerCenterY < blockTop - 2f;
-
-                boolean deepOverlap = overlapX > 12f && overlapY > 12f;
-
-                if (insideBlockHeight && deepOverlap) {
-                    player.startDeathAnimation();
-                    player.changeState(new DeadState());
-                }
-            }
-
-            return;
-        }
-
-        boolean falling = player.getVelocityY() <= 0f;
-
-        boolean horizontallyAligned;
-        boolean landingOnTop;
-
-        if (obstacle.getType() == Obstacle.ObstacleType.TRAP_BLOCK) {
-            horizontallyAligned =
-                playerCenterX > blockLeft + 12f &&
-                    playerCenterX < blockRight - 12f;
-
-            landingOnTop =
-                falling &&
-                    horizontallyAligned &&
-                    playerBottom >= blockTop - 8f &&
-                    playerBottom <= blockTop + 4f;
-        } else {
-            horizontallyAligned =
-                playerRight > blockLeft + 2f &&
-                    playerLeft < blockRight - 2f;
-
-            landingOnTop =
-                falling &&
-                    horizontallyAligned &&
-                    playerBottom >= blockTop - 18f &&
-                    playerBottom <= blockTop + 10f;
-        }
-
-        if (landingOnTop) {
-            player.landOn(blockTop);
-
-            if (obstacle.getType() == Obstacle.ObstacleType.FRAGILE_BLOCK) {
-                obstacle.triggerBreak(0.35f);
-            }
-
-            if (obstacle.getType() == Obstacle.ObstacleType.TRAP_BLOCK) {
-                obstacle.triggerBreak(0.08f);
-            }
-            return;
-        }
-
-        if (obstacle.getType() == Obstacle.ObstacleType.GHOST_BLOCK
-            || obstacle.getType() == Obstacle.ObstacleType.TRAP_BLOCK) {
-            return;
-        }
-
-        boolean insideBlockHeight =
-            playerCenterY > blockBottom + 2f &&
-                playerCenterY < blockTop - 2f;
-
-        if (insideBlockHeight) {
-            player.startDeathAnimation();
-            player.changeState(new DeadState());
-
         }
     }
 
