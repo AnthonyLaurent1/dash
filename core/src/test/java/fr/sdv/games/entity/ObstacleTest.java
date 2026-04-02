@@ -8,6 +8,17 @@ import static org.junit.jupiter.api.Assertions.*;
 class ObstacleTest {
 
     @Test
+    void constructorShouldInitializeObstacleFields() {
+        Obstacle obstacle = new Obstacle(100f, 90f, 42f, 42f, Obstacle.ObstacleType.BLOCK);
+
+        assertEquals(100f, obstacle.getX());
+        assertEquals(90f, obstacle.getY());
+        assertEquals(42f, obstacle.getWidth());
+        assertEquals(42f, obstacle.getHeight());
+        assertEquals(Obstacle.ObstacleType.BLOCK, obstacle.getType());
+    }
+
+    @Test
     void updateShouldMoveObstacleToTheLeft() {
         Obstacle obstacle = new Obstacle(200f, 90f, 42f, 42f, Obstacle.ObstacleType.BLOCK);
 
@@ -20,7 +31,7 @@ class ObstacleTest {
     void triggerBreakShouldStartBreakingState() {
         Obstacle obstacle = new Obstacle(200f, 90f, 42f, 42f, Obstacle.ObstacleType.FRAGILE_BLOCK);
 
-        obstacle.triggerBreak(0.35f);
+        obstacle.triggerBreak(0.3f);
 
         assertTrue(obstacle.isBreaking());
         assertFalse(obstacle.isBroken());
@@ -29,10 +40,10 @@ class ObstacleTest {
 
     @Test
     void updateShouldMarkObstacleAsBrokenWhenBreakTimerExpires() {
-        Obstacle obstacle = new Obstacle(200f, 90f, 42f, 42f, Obstacle.ObstacleType.FRAGILE_BLOCK);
-        obstacle.triggerBreak(0.2f);
+        Obstacle obstacle = new Obstacle(200f, 90f, 42f, 42f, Obstacle.ObstacleType.TRAP_BLOCK);
+        obstacle.triggerBreak(0.1f);
 
-        obstacle.update(0.3f, 0f);
+        obstacle.update(0.2f, 0f);
 
         assertTrue(obstacle.isBroken());
         assertFalse(obstacle.isSolid());
@@ -51,7 +62,7 @@ class ObstacleTest {
     }
 
     @Test
-    void getDangerBoundsShouldBeReducedForGroundSpike() {
+    void getDangerBoundsShouldShrinkGroundSpikeHitbox() {
         Obstacle obstacle = new Obstacle(100f, 90f, 28f, 38f, Obstacle.ObstacleType.SPIKE);
 
         Rectangle dangerBounds = obstacle.getDangerBounds();
@@ -63,7 +74,7 @@ class ObstacleTest {
     }
 
     @Test
-    void getDangerBoundsShouldBeShiftedUpForTopSpike() {
+    void getDangerBoundsShouldShiftTopSpikeHitboxUpward() {
         Obstacle obstacle = new Obstacle(150f, 500f, 28f, 38f, Obstacle.ObstacleType.FLY_SPIKE_TOP);
 
         Rectangle dangerBounds = obstacle.getDangerBounds();
@@ -75,7 +86,7 @@ class ObstacleTest {
     }
 
     @Test
-    void getDangerBoundsShouldMatchBoundsForRegularBlock() {
+    void getDangerBoundsShouldMatchBoundsForNonSpikeObstacle() {
         Obstacle obstacle = new Obstacle(300f, 90f, 42f, 42f, Obstacle.ObstacleType.BLOCK);
 
         Rectangle bounds = obstacle.getBounds();
@@ -88,7 +99,7 @@ class ObstacleTest {
     }
 
     @Test
-    void triggerBreakShouldDoNothingIfObstacleIsAlreadyBroken() {
+    void triggerBreakShouldDoNothingWhenObstacleIsAlreadyBroken() {
         Obstacle obstacle = new Obstacle(200f, 90f, 42f, 42f, Obstacle.ObstacleType.FRAGILE_BLOCK);
         obstacle.triggerBreak(0.1f);
         obstacle.update(0.2f, 0f);
@@ -96,5 +107,6 @@ class ObstacleTest {
         obstacle.triggerBreak(1f);
 
         assertTrue(obstacle.isBroken());
+        assertFalse(obstacle.isSolid());
     }
 }

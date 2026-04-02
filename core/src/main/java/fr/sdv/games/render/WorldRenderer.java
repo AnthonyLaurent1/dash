@@ -158,41 +158,109 @@ public class WorldRenderer {
     }
 
     /**
-     * Dessine tous les obstacles du niveau selon leur type.
+     * Dessine tous les obstacles du niveau.
      */
     private void drawObstacles() {
         for (Obstacle obstacle : world.getLevel().getObstacles()) {
-            switch (obstacle.getType()) {
-                case BLOCK:
-                    drawBlock(obstacle, BLOCK_SHELL, BLOCK_CORE);
-                    break;
-                case GHOST_BLOCK:
-                    drawBlock(obstacle, new Color(0.10f, 0.10f, 0.14f, 0.55f), new Color(0.86f, 0.88f, 0.96f, 0.55f));
-                    break;
-                case TRAP_BLOCK:
-                    drawBlock(obstacle, new Color(0.40f, 0.08f, 0.18f, 1f), new Color(0.98f, 0.52f, 0.68f, 1f));
-                    break;
-                case FLY_BLOCK:
-                    drawBlock(obstacle, new Color(0.12f, 0.08f, 0.22f, 1f), new Color(0.82f, 0.86f, 1.00f, 1f));
-                    break;
-                case FRAGILE_BLOCK:
-                    if (!obstacle.isBroken()) {
-                        if (obstacle.isBreaking()) {
-                            drawBlock(obstacle, new Color(0.38f, 0.24f, 0.08f, 1f), new Color(0.98f, 0.84f, 0.34f, 1f));
-                        } else {
-                            drawBlock(obstacle, new Color(0.30f, 0.28f, 0.08f, 1f), new Color(0.96f, 0.94f, 0.42f, 1f));
-                        }
-                    }
-                    break;
-                case SPIKE:
-                case FLY_SPIKE_BOTTOM:
-                    drawBottomSpike(obstacle, SPIKE_SHELL, SPIKE_CORE);
-                    break;
-                case FLY_SPIKE_TOP:
-                    drawTopSpike(obstacle, SPIKE_SHELL, SPIKE_CORE);
-                    break;
-            }
+            drawObstacle(obstacle);
         }
+    }
+
+    /**
+     * Redirige le rendu vers la routine adaptee au type d'obstacle.
+     *
+     * @param obstacle obstacle a dessiner
+     */
+    private void drawObstacle(Obstacle obstacle) {
+        switch (obstacle.getType()) {
+            case BLOCK:
+                drawBlock(obstacle, BLOCK_SHELL, BLOCK_CORE);
+                break;
+            case GHOST_BLOCK:
+                drawGhostBlock(obstacle);
+                break;
+            case TRAP_BLOCK:
+                drawTrapBlock(obstacle);
+                break;
+            case FLY_BLOCK:
+                drawFlyBlock(obstacle);
+                break;
+            case FRAGILE_BLOCK:
+                drawFragileBlock(obstacle);
+                break;
+            case SPIKE:
+            case FLY_SPIKE_BOTTOM:
+                drawBottomSpike(obstacle);
+                break;
+            case FLY_SPIKE_TOP:
+                drawTopSpike(obstacle);
+                break;
+        }
+    }
+
+    /**
+     * Dessine un bloc fantome semi-transparent.
+     *
+     * @param obstacle bloc fantome a dessiner
+     */
+    private void drawGhostBlock(Obstacle obstacle) {
+        drawBlock(
+            obstacle,
+            new Color(0.10f, 0.10f, 0.14f, 0.55f),
+            new Color(0.86f, 0.88f, 0.96f, 0.55f)
+        );
+    }
+
+    /**
+     * Dessine un bloc piege avec sa palette dediee.
+     *
+     * @param obstacle bloc piege a dessiner
+     */
+    private void drawTrapBlock(Obstacle obstacle) {
+        drawBlock(
+            obstacle,
+            new Color(0.40f, 0.08f, 0.18f, 1f),
+            new Color(0.98f, 0.52f, 0.68f, 1f)
+        );
+    }
+
+    /**
+     * Dessine un bloc de section fly.
+     *
+     * @param obstacle bloc de vol a dessiner
+     */
+    private void drawFlyBlock(Obstacle obstacle) {
+        drawBlock(
+            obstacle,
+            new Color(0.12f, 0.08f, 0.22f, 1f),
+            new Color(0.82f, 0.86f, 1.00f, 1f)
+        );
+    }
+
+    /**
+     * Dessine un bloc fragile tant qu'il n'a pas completement disparu.
+     *
+     * @param obstacle bloc fragile a dessiner
+     */
+    private void drawFragileBlock(Obstacle obstacle) {
+        if (obstacle.isBroken()) {
+            return;
+        }
+
+        if (obstacle.isBreaking()) {
+            drawBlock(
+                obstacle,
+                new Color(0.38f, 0.24f, 0.08f, 1f),
+                new Color(0.98f, 0.84f, 0.34f, 1f)
+            );
+            return;
+        }
+
+        drawBlock(
+            obstacle,
+            new Color(0.30f, 0.28f, 0.08f, 1f),
+            new Color(0.96f, 0.94f, 0.42f, 1f)
+        );
     }
 
     /**
@@ -215,7 +283,7 @@ public class WorldRenderer {
     /**
      * Dessine un pic oriente vers le haut.
      */
-    private void drawBottomSpike(Obstacle obstacle, Color base, Color highlight) {
+    private void drawBottomSpike(Obstacle obstacle) {
         shapeRenderer.setColor(new Color(0.16f, 0.12f, 0.28f, 1f));
         shapeRenderer.triangle(
             obstacle.getX() - 3, obstacle.getY() - 3,
@@ -223,14 +291,14 @@ public class WorldRenderer {
             obstacle.getX() + obstacle.getWidth() + 3, obstacle.getY() - 3
         );
 
-        shapeRenderer.setColor(base);
+        shapeRenderer.setColor(WorldRenderer.SPIKE_SHELL);
         shapeRenderer.triangle(
             obstacle.getX(), obstacle.getY(),
             obstacle.getX() + obstacle.getWidth() / 2f, obstacle.getY() + obstacle.getHeight(),
             obstacle.getX() + obstacle.getWidth(), obstacle.getY()
         );
 
-        shapeRenderer.setColor(highlight);
+        shapeRenderer.setColor(WorldRenderer.SPIKE_CORE);
         shapeRenderer.triangle(
             obstacle.getX() + obstacle.getWidth() * 0.24f, obstacle.getY() + obstacle.getHeight() * 0.08f,
             obstacle.getX() + obstacle.getWidth() / 2f, obstacle.getY() + obstacle.getHeight() * 0.66f,
@@ -241,7 +309,7 @@ public class WorldRenderer {
     /**
      * Dessine un pic suspendu oriente vers le bas.
      */
-    private void drawTopSpike(Obstacle obstacle, Color base, Color highlight) {
+    private void drawTopSpike(Obstacle obstacle) {
         shapeRenderer.setColor(new Color(0.16f, 0.12f, 0.28f, 1f));
         shapeRenderer.triangle(
             obstacle.getX() - 3, obstacle.getY() + 3,
@@ -249,14 +317,14 @@ public class WorldRenderer {
             obstacle.getX() + obstacle.getWidth() + 3, obstacle.getY() + 3
         );
 
-        shapeRenderer.setColor(base);
+        shapeRenderer.setColor(WorldRenderer.SPIKE_SHELL);
         shapeRenderer.triangle(
             obstacle.getX(), obstacle.getY(),
             obstacle.getX() + obstacle.getWidth() / 2f, obstacle.getY() - obstacle.getHeight(),
             obstacle.getX() + obstacle.getWidth(), obstacle.getY()
         );
 
-        shapeRenderer.setColor(highlight);
+        shapeRenderer.setColor(WorldRenderer.SPIKE_CORE);
         shapeRenderer.triangle(
             obstacle.getX() + obstacle.getWidth() * 0.24f, obstacle.getY() - obstacle.getHeight() * 0.08f,
             obstacle.getX() + obstacle.getWidth() / 2f, obstacle.getY() - obstacle.getHeight() * 0.66f,

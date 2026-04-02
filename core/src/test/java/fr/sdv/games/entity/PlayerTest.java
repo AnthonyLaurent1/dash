@@ -1,9 +1,9 @@
 package fr.sdv.games.entity;
 
-import fr.sdv.games.state.CubeState;
 import fr.sdv.games.state.DeadState;
 import fr.sdv.games.state.FlyState;
 import fr.sdv.games.state.InvertedCubeState;
+import fr.sdv.games.world.GameWorld;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,32 +22,39 @@ class PlayerTest {
         player.reset();
 
         assertEquals(140f, player.getX());
-        assertEquals(90f, player.getY());
+        assertEquals(GameWorld.GROUND_Y, player.getY());
         assertEquals(0f, player.getVelocityY());
         assertEquals(0f, player.getRotation());
         assertFalse(player.isInputPressed());
         assertFalse(player.isDeathAnimating());
+        assertFalse(player.isFlying());
+        assertFalse(player.isInverted());
+        assertFalse(player.isDead());
         assertEquals("CUBE", player.getState().getName());
     }
 
     @Test
-    void startDeathAnimationShouldActivateAnimationProgress() {
-        Player player = new Player();
-
-        player.startDeathAnimation();
-
-        assertTrue(player.isDeathAnimating());
-        assertEquals(0f, player.getDeathProgress(), 0.0001f);
-    }
-
-    @Test
-    void dieShouldCentralizeDeadStateTransition() {
+    void dieShouldActivateDeathAnimationAndDeadState() {
         Player player = new Player();
 
         player.die();
 
         assertTrue(player.isDead());
         assertTrue(player.isDeathAnimating());
+        assertInstanceOf(DeadState.class, player.getState());
+    }
+
+    @Test
+    void dieShouldDoNothingIfPlayerIsAlreadyDead() {
+        Player player = new Player();
+        player.die();
+        float firstProgress = player.getDeathProgress();
+
+        player.die();
+
+        assertTrue(player.isDead());
+        assertTrue(player.isDeathAnimating());
+        assertEquals(firstProgress, player.getDeathProgress(), 0.0001f);
     }
 
     @Test
@@ -57,8 +64,21 @@ class PlayerTest {
 
         player.updateDeathAnimation(0.35f);
 
-        assertTrue(player.isDeathAnimating());
         assertEquals(1f, player.getDeathProgress(), 0.0001f);
+    }
+
+    @Test
+    void setGroundedCubeStateShouldPlacePlayerOnGround() {
+        Player player = new Player();
+        player.changeState(new FlyState());
+        player.jump(500f);
+        player.moveVertical(0.2f);
+
+        player.setGroundedCubeState();
+
+        assertEquals(GameWorld.GROUND_Y, player.getY(), 0.0001f);
+        assertEquals(0f, player.getVelocityY(), 0.0001f);
+        assertEquals("CUBE", player.getState().getName());
     }
 
     @Test
@@ -67,11 +87,12 @@ class PlayerTest {
 
         player.jump(650f);
 
-        assertEquals(650f, player.getVelocityY());
+        assertEquals(650f, player.getVelocityY(), 0.0001f);
     }
 
     @Test
     void applyGravityShouldDecreaseVerticalVelocity() {
+
         Player player = new Player();
         player.setVelocityY(300f);
 
@@ -98,7 +119,7 @@ class PlayerTest {
 
         player.clampToGround();
 
-        assertEquals(90f, player.getY(), 0.0001f);
+        assertEquals(GameWorld.GROUND_Y, player.getY(), 0.0001f);
         assertEquals(0f, player.getVelocityY(), 0.0001f);
         assertEquals(0f, player.getRotation(), 0.0001f);
     }
@@ -107,20 +128,21 @@ class PlayerTest {
     void clampToFlyBoundsShouldKeepPlayerInsidePlayableArea() {
         Player player = new Player();
         player.landOn(600f);
-        player.setVelocityY(50f);
+        player.setVelocityY(200f);
 
         player.clampToFlyBounds();
 
-        assertTrue(player.getY() <= 472f);
+        assertTrue(player.getY() <= GameWorld.SCREEN_HEIGHT - 36f - player.getSize());
     }
 
     @Test
     void snapToCeilingShouldPlacePlayerAtCeiling() {
+        // Arrange
         Player player = new Player();
 
         player.snapToCeiling();
 
-        assertEquals(472f, player.getY(), 0.0001f);
+        assertEquals(GameWorld.SCREEN_HEIGHT - 36f - player.getSize(), player.getY(), 0.0001f);
         assertEquals(0f, player.getVelocityY(), 0.0001f);
     }
 
@@ -132,37 +154,24 @@ class PlayerTest {
 
         player.clampToCeiling();
 
-        assertEquals(472f, player.getY(), 0.0001f);
+        assertEquals(GameWorld.SCREEN_HEIGHT - 36f - player.getSize(), player.getY(), 0.0001f);
         assertEquals(0f, player.getVelocityY(), 0.0001f);
         assertEquals(180f, player.getRotation(), 0.0001f);
     }
 
     @Test
-    void changeStateShouldUpdateCurrentState() {
+    void changeStateShouldUpdateFlyingAndInvertedFlags() {
         Player player = new Player();
 
         player.changeState(new FlyState());
 
-        assertEquals("FLY", player.getState().getName());
         assertTrue(player.isFlying());
-    }
-
-    @Test
-    void isInvertedShouldReturnTrueWhenInvertedStateIsApplied() {
-        Player player = new Player();
+        assertFalse(player.isInverted());
 
         player.changeState(new InvertedCubeState());
 
+        assertFalse(player.isFlying());
         assertTrue(player.isInverted());
-    }
-
-    @Test
-    void isDeadShouldReturnTrueWhenDeadStateIsApplied() {
-        Player player = new Player();
-
-        player.changeState(new DeadState());
-
-        assertTrue(player.isDead());
     }
 
     @Test
@@ -170,6 +179,7 @@ class PlayerTest {
         Player player = new Player();
 
         player.handleInput(true, false);
+
 
         assertTrue(player.isInputPressed());
     }

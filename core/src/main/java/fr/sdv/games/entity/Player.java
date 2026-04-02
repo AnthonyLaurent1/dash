@@ -244,13 +244,6 @@ public class Player {
         }
     }
 
-    /**
-     *  {@code true} si le joueur est considere colle au plafond
-     */
-    public boolean isOnCeiling() {
-        return y >= getCeilingY() - 0.1f;
-    }
-
     private float getCeilingY() {
         return GameWorld.SCREEN_HEIGHT - 36f - SIZE;
     }

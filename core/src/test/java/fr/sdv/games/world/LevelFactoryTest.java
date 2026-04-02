@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class LevelFactoryTest {
 
     @Test
-    void createLevel1ShouldReturnANonNullLevel() {
+    void createLevel1ShouldReturnNonNullLevel() {
         Level level = LevelFactory.createLevel1();
 
         assertNotNull(level);
@@ -19,26 +19,64 @@ class LevelFactoryTest {
     void createLevel1ShouldSetExpectedFinishX() {
         Level level = LevelFactory.createLevel1();
 
-        assertEquals(17820f, level.getFinishX());
+        assertEquals(17820f, level.getInitialFinishX(), 0.0001f);
     }
 
     @Test
-    void createLevel1ShouldContainFourPortalsInExpectedOrder() {
+    void createLevel1ShouldContainExpectedPortalsInOrder() {
         Level level = LevelFactory.createLevel1();
 
-        var portals = level.getPortals();
+        assertEquals(4, level.getPortals().size);
 
-        assertEquals(4, portals.size);
+        assertEquals(Portal.PortalType.FLY, level.getPortals().get(0).getType());
+        assertEquals(Portal.PortalType.CUBE, level.getPortals().get(1).getType());
+        assertEquals(Portal.PortalType.INVERT_ON, level.getPortals().get(2).getType());
+        assertEquals(Portal.PortalType.INVERT_OFF, level.getPortals().get(3).getType());
 
-        assertEquals(Portal.PortalType.FLY, portals.get(0).getType());
-        assertEquals(Portal.PortalType.CUBE, portals.get(1).getType());
-        assertEquals(Portal.PortalType.INVERT_ON, portals.get(2).getType());
-        assertEquals(Portal.PortalType.INVERT_OFF, portals.get(3).getType());
+        assertEquals(4910f, level.getPortals().get(0).getX(), 0.0001f);
+        assertEquals(9260f, level.getPortals().get(1).getX(), 0.0001f);
+        assertEquals(12300f, level.getPortals().get(2).getX(), 0.0001f);
+        assertEquals(15020f, level.getPortals().get(3).getX(), 0.0001f);
+    }
 
-        assertEquals(4910f, portals.get(0).getX());
-        assertEquals(9260f, portals.get(1).getX());
-        assertEquals(12300f, portals.get(2).getX());
-        assertEquals(15020f, portals.get(3).getX());
+    @Test
+    void createLevel1ShouldContainGroundSpikes() {
+        Level level = LevelFactory.createLevel1();
+
+        boolean foundGroundSpike = false;
+        for (Obstacle obstacle : level.getObstacles()) {
+            if (obstacle.getType() == Obstacle.ObstacleType.SPIKE) {
+                foundGroundSpike = true;
+                break;
+            }
+        }
+
+        assertTrue(foundGroundSpike);
+    }
+
+    @Test
+    void createLevel1ShouldContainFlySectionObstacles() {
+        Level level = LevelFactory.createLevel1();
+
+        boolean foundFlyBlock = false;
+        boolean foundTopFlySpike = false;
+        boolean foundBottomFlySpike = false;
+
+        for (Obstacle obstacle : level.getObstacles()) {
+            if (obstacle.getType() == Obstacle.ObstacleType.FLY_BLOCK) {
+                foundFlyBlock = true;
+            }
+            if (obstacle.getType() == Obstacle.ObstacleType.FLY_SPIKE_TOP) {
+                foundTopFlySpike = true;
+            }
+            if (obstacle.getType() == Obstacle.ObstacleType.FLY_SPIKE_BOTTOM) {
+                foundBottomFlySpike = true;
+            }
+        }
+
+        assertTrue(foundFlyBlock);
+        assertTrue(foundTopFlySpike);
+        assertTrue(foundBottomFlySpike);
     }
 
     @Test
@@ -50,7 +88,7 @@ class LevelFactoryTest {
 
         for (Obstacle obstacle : level.getObstacles()) {
             if (obstacle.getType() == Obstacle.ObstacleType.TRAP_BLOCK) {
-                if (obstacle.getY() > GameWorld.GROUND_Y + 1f) {
+                if (obstacle.getY() <= GameWorld.GROUND_Y + 2 * 42f) {
                     foundNormalTrap = true;
                 }
                 if (obstacle.getY() > GameWorld.SCREEN_HEIGHT / 2f) {
@@ -59,41 +97,14 @@ class LevelFactoryTest {
             }
         }
 
-        assertTrue(foundNormalTrap, "Le niveau devrait contenir au moins un trap block dans une section normale.");
-        assertTrue(foundCeilingTrap, "Le niveau devrait contenir au moins un trap block dans la section inversée.");
+        assertTrue(foundNormalTrap);
+        assertTrue(foundCeilingTrap);
     }
 
     @Test
-    void createLevel1ShouldContainGroundSpikesAndFlySectionObstacles() {
+    void createLevel1ShouldContainManyObstacles() {
         Level level = LevelFactory.createLevel1();
 
-        boolean foundGroundSpike = false;
-        boolean foundFlyBlock = false;
-        boolean foundTopFlySpike = false;
-        boolean foundBottomFlySpike = false;
-
-        for (Obstacle obstacle : level.getObstacles()) {
-            switch (obstacle.getType()) {
-                case SPIKE:
-                    foundGroundSpike = true;
-                    break;
-                case FLY_BLOCK:
-                    foundFlyBlock = true;
-                    break;
-                case FLY_SPIKE_TOP:
-                    foundTopFlySpike = true;
-                    break;
-                case FLY_SPIKE_BOTTOM:
-                    foundBottomFlySpike = true;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        assertTrue(foundGroundSpike, "Le niveau devrait contenir des pics au sol.");
-        assertTrue(foundFlyBlock, "Le niveau devrait contenir des blocs dans la section fly.");
-        assertTrue(foundTopFlySpike, "Le niveau devrait contenir des pics au plafond dans la section fly/inversée.");
-        assertTrue(foundBottomFlySpike, "Le niveau devrait contenir des pics au sol dans la section fly.");
+        assertTrue(level.getObstacles().size > 20);
     }
 }

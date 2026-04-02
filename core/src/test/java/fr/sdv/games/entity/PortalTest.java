@@ -3,7 +3,7 @@ package fr.sdv.games.entity;
 import com.badlogic.gdx.math.Rectangle;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PortalTest {
 

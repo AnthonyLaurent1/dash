@@ -6,44 +6,166 @@ import fr.sdv.games.state.FlyState;
 import fr.sdv.games.state.InvertedCubeState;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class BlockCollisionResolverTest {
 
     @Test
-    void resolveShouldKillFlyingPlayerOnBlockContact() {
+    void resolveShouldKillPlayerWhenFlyingIntoBlock() {
         Player player = new Player();
         player.changeState(new FlyState());
-        Obstacle block = new Obstacle(140f, GameWorld.GROUND_Y, 42f, 42f, Obstacle.ObstacleType.BLOCK);
 
-        BlockCollisionResolver.resolve(player, block);
+        Obstacle obstacle = new Obstacle(
+            player.getX(),
+            player.getY(),
+            42f,
+            42f,
+            Obstacle.ObstacleType.BLOCK
+        );
+
+        BlockCollisionResolver.resolve(player, obstacle);
+
+        assertTrue(player.isDead());
+        assertTrue(player.isDeathAnimating());
+    }
+
+    @Test
+    void resolveShouldLandPlayerOnTopOfStandardBlock() {
+        Player player = new Player();
+        player.landOn(140f);
+        player.setVelocityY(-50f);
+
+        Obstacle obstacle = new Obstacle(
+            player.getX(),
+            90f,
+            42f,
+            42f,
+            Obstacle.ObstacleType.BLOCK
+        );
+
+        BlockCollisionResolver.resolve(player, obstacle);
+
+        assertEquals(132f, player.getY(), 0.0001f);
+        assertEquals(0f, player.getVelocityY(), 0.0001f);
+        assertFalse(player.isDead());
+    }
+
+    @Test
+    void resolveShouldBreakFragileBlockWhenLandingOnIt() {
+        Player player = new Player();
+        player.landOn(140f);
+        player.setVelocityY(-50f);
+
+        Obstacle obstacle = new Obstacle(
+            player.getX(),
+            90f,
+            42f,
+            42f,
+            Obstacle.ObstacleType.FRAGILE_BLOCK
+        );
+
+        BlockCollisionResolver.resolve(player, obstacle);
+
+        assertTrue(obstacle.isBreaking());
+        assertFalse(obstacle.isBroken());
+        assertFalse(player.isDead());
+    }
+
+    @Test
+    void resolveShouldBreakTrapBlockWhenLandingOnIt() {
+        Player player = new Player();
+        player.landOn(136f);
+        player.setVelocityY(-20f);
+
+        Obstacle obstacle = new Obstacle(
+            player.getX(),
+            90f,
+            42f,
+            42f,
+            Obstacle.ObstacleType.TRAP_BLOCK
+        );
+
+        BlockCollisionResolver.resolve(player, obstacle);
+
+        assertTrue(obstacle.isBreaking());
+        assertFalse(player.isDead());
+    }
+
+    @Test
+    void resolveShouldNotKillPlayerWhenPassingThroughGhostBlock() {
+        Player player = new Player();
+        player.landOn(110f);
+        player.setVelocityY(0f);
+
+        Obstacle obstacle = new Obstacle(
+            player.getX(),
+            90f,
+            42f,
+            42f,
+            Obstacle.ObstacleType.GHOST_BLOCK
+        );
+
+        BlockCollisionResolver.resolve(player, obstacle);
+
+        assertFalse(player.isDead());
+    }
+
+    @Test
+    void resolveShouldKillPlayerWhenIntersectingSolidBlockFromSide() {
+        Player player = new Player();
+        player.landOn(100f);
+        player.setVelocityY(0f);
+
+        Obstacle obstacle = new Obstacle(
+            player.getX(),
+            90f,
+            42f,
+            42f,
+            Obstacle.ObstacleType.BLOCK
+        );
+
+        BlockCollisionResolver.resolve(player, obstacle);
 
         assertTrue(player.isDead());
     }
 
     @Test
-    void resolveShouldLandPlayerOnTopOfTrapBlock() {
+    void resolveShouldLandPlayerUnderBlockWhenInverted() {
         Player player = new Player();
-        player.landOn(125f);
-        player.setVelocityY(-50f);
-        Obstacle trapBlock = new Obstacle(140f, 90f, 42f, 42f, Obstacle.ObstacleType.TRAP_BLOCK);
+        player.changeState(new InvertedCubeState());
+        player.setVelocityY(20f);
 
-        BlockCollisionResolver.resolve(player, trapBlock);
+        Obstacle obstacle = new Obstacle(
+            player.getX(),
+            player.getY() + player.getSize() - 4f,
+            42f,
+            42f,
+            Obstacle.ObstacleType.BLOCK
+        );
 
-        assertEquals(132f, player.getY(), 0.0001f);
-        assertTrue(trapBlock.isBreaking());
+        BlockCollisionResolver.resolve(player, obstacle);
+
+        assertEquals(obstacle.getY() - player.getSize(), player.getY(), 0.0001f);
+        assertFalse(player.isDead());
     }
 
     @Test
-    void resolveShouldLandInvertedPlayerUnderBlock() {
+    void resolveShouldKillPlayerWhenDeepInsideSolidBlockInInvertedMode() {
         Player player = new Player();
         player.changeState(new InvertedCubeState());
+        player.landOn(120f);
         player.setVelocityY(0f);
-        Obstacle block = new Obstacle(140f, 490f, 42f, 42f, Obstacle.ObstacleType.BLOCK);
 
-        BlockCollisionResolver.resolve(player, block);
+        Obstacle obstacle = new Obstacle(
+            player.getX(),
+            100f,
+            42f,
+            42f,
+            Obstacle.ObstacleType.BLOCK
+        );
 
-        assertEquals(458f, player.getY(), 0.0001f);
+        BlockCollisionResolver.resolve(player, obstacle);
+
+        assertTrue(player.isDead());
     }
 }

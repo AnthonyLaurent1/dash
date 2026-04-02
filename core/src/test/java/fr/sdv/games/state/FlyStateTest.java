@@ -4,7 +4,8 @@ import fr.sdv.games.entity.Player;
 import fr.sdv.games.world.GameWorld;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FlyStateTest {
 
@@ -69,7 +70,6 @@ class FlyStateTest {
         assertEquals(-420f, player.getVelocityY(), 0.0001f);
     }
 
-
     @Test
     void updateShouldClampPlayerInsideFlyBounds() {
         Player player = new Player();
@@ -87,8 +87,6 @@ class FlyStateTest {
     void getNameShouldReturnFly() {
         FlyState state = new FlyState();
 
-        String name = state.getName();
-
-        assertEquals("FLY", name);
+        assertEquals("FLY", state.getName());
     }
 }

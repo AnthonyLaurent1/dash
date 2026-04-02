@@ -4,7 +4,8 @@ import fr.sdv.games.entity.Player;
 import fr.sdv.games.world.GameWorld;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InvertedCubeStateTest {
 
@@ -75,8 +76,6 @@ class InvertedCubeStateTest {
     void getNameShouldReturnInverted() {
         InvertedCubeState state = new InvertedCubeState();
 
-        String name = state.getName();
-
-        assertEquals("INVERTED", name);
+        assertEquals("INVERTED", state.getName());
     }
 }

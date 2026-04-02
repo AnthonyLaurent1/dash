@@ -20,8 +20,36 @@ class GameWorldTest {
 
         world.update(0.016f);
 
-        assertEquals("FLY", world.getPlayer().getState().getName());
         assertTrue(world.getPlayer().isFlying());
+        assertEquals("FLY", world.getPlayer().getState().getName());
+    }
+
+    @Test
+    void playerShouldReturnToCubeStateWhenTouchingCubePortal() {
+        Level level = new Level();
+        level.setFinishX(10_000f);
+        GameWorld world = new GameWorld(level);
+        world.getPlayer().changeState(new fr.sdv.games.state.FlyState());
+        level.addPortal(new Portal(140f, 0f, 50f, GameWorld.SCREEN_HEIGHT, PortalType.CUBE));
+
+        world.update(0.016f);
+
+        assertFalse(world.getPlayer().isFlying());
+        assertEquals("CUBE", world.getPlayer().getState().getName());
+        assertEquals(GameWorld.GROUND_Y, world.getPlayer().getY(), 0.0001f);
+    }
+
+    @Test
+    void playerShouldEnterInvertedStateWhenTouchingInvertOnPortal() {
+        Level level = new Level();
+        level.setFinishX(10_000f);
+        level.addPortal(new Portal(140f, 0f, 50f, GameWorld.SCREEN_HEIGHT, PortalType.INVERT_ON));
+        GameWorld world = new GameWorld(level);
+
+        world.update(0.016f);
+
+        assertTrue(world.getPlayer().isInverted());
+        assertEquals("INVERTED", world.getPlayer().getState().getName());
     }
 
     @Test
@@ -85,15 +113,13 @@ class GameWorldTest {
         GameWorld world = new GameWorld(level);
         world.update(0.016f);
 
-        Vector2 clickInsideRestartButton = new Vector2(350f, 140f);
-
-        boolean restarted = world.clickRestart(clickInsideRestartButton);
+        boolean restarted = world.clickRestart(new Vector2(350f, 140f));
 
         assertTrue(restarted);
         assertFalse(world.getPlayer().isDead());
         assertFalse(world.isVictory());
         assertFalse(world.isEndlessMode());
-        assertEquals(0f, world.getScore());
+        assertEquals(0f, world.getScore(), 0.0001f);
     }
 
     @Test
